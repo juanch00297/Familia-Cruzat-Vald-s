@@ -2,7 +2,12 @@
 <html lang="es">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#0f62fe" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="apple-mobile-web-app-title" content="Cruzat Valdés" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎂</text></svg>" />
 <title>Familia Cruzat Valdés — Cumpleaños y Árbol</title>
 <style>
   :root {
@@ -13,19 +18,19 @@
     --text: #0f172a;
     --muted: #64748b;
     --border: #e2e8f0;
-    --radius: 14px;
+    --radius: 16px;
     --shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
     --male: #2563eb;
     --male-bg: #dbeafe;
     --female: #db2777;
     --female-bg: #fce7f3;
   }
-  * { box-sizing: border-box; }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, Helvetica, Arial, sans-serif;
     max-width: 1240px;
     margin: 0 auto;
-    padding: 18px 16px 40px;
+    padding: 16px 16px 44px;
     background: var(--bg);
     color: var(--text);
     line-height: 1.4;
@@ -37,59 +42,84 @@
     flex-wrap: wrap;
     justify-content: space-between;
     align-items: center;
-    gap: 14px;
+    gap: 12px;
     background: var(--card);
-    padding: 18px 22px;
+    padding: 16px 20px;
     border-radius: var(--radius);
     box-shadow: var(--shadow);
     border: 1px solid var(--border);
-    margin-bottom: 18px;
+    margin-bottom: 16px;
   }
-  .brand h1 { margin: 0; font-size: 1.45rem; color: var(--text); letter-spacing: -0.02em; }
-  .brand-meta { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 5px; font-size: 0.85rem; color: var(--muted); }
+  .brand h1 { margin: 0; font-size: 1.38rem; color: var(--text); letter-spacing: -0.02em; }
+  .brand-meta {
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    margin-top: 4px; font-size: 0.83rem; color: var(--muted);
+  }
   .sync-pill {
-    display: inline-flex; align-items: center; gap: 5px;
-    padding: 2px 9px; border-radius: 999px; font-size: 0.76rem; font-weight: 600;
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 2px 9px; border-radius: 999px; font-size: 0.74rem; font-weight: 600;
     background: #f1f5f9; color: #475569; border: 1px solid var(--border);
   }
   .sync-pill.ok { background: #ecfdf5; color: #047857; border-color: #a7f3d0; }
   .sync-pill.warn { background: #fffbeb; color: #b45309; border-color: #fde68a; }
   .ver-tag {
-    font-size: 0.72rem; font-weight: 700; padding: 2px 7px; border-radius: 6px;
+    font-size: 0.7rem; font-weight: 700; padding: 2px 6px; border-radius: 6px;
     background: #eff6ff; color: var(--primary); border: 1px solid #bfdbfe;
   }
 
   .top-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
   .btn {
     background: #fff; border: 1px solid #cbd5e1; color: var(--text);
-    padding: 8px 13px; border-radius: 10px; cursor: pointer;
-    font-weight: 600; font-size: 0.86rem; transition: all 0.15s ease;
-    display: inline-flex; align-items: center; gap: 6px;
+    padding: 9px 13px; border-radius: 10px; cursor: pointer;
+    font-weight: 600; font-size: 0.85rem; transition: all 0.15s ease;
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    min-height: 38px; text-decoration: none;
   }
   .btn:hover { background: #f8fafc; border-color: #94a3b8; }
+  .btn:active { transform: scale(0.98); }
   .btn-primary { background: var(--primary); color: #fff; border-color: var(--primary); }
   .btn-primary:hover { background: var(--primary-dark); border-color: var(--primary-dark); }
+  .btn-whatsapp { background: #16a34a; color: #fff; border-color: #16a34a; }
+  .btn-whatsapp:hover { background: #15803d; }
   .btn-danger { background: #fff1f2; color: #be123c; border-color: #fecdd3; }
   .btn-danger:hover { background: #ffe4e6; }
   .btn-admin { background: #fffbeb; border-color: #f59e0b; color: #92400e; }
   .btn-admin.unlocked { background: #ecfdf5; border-color: #10b981; color: #065f46; }
 
-  /* Tabs */
+  /* Barra Admin secundaria */
+  .admin-bar {
+    display: none;
+    background: #ecfdf5;
+    border: 1px solid #a7f3d0;
+    border-radius: 12px;
+    padding: 10px 14px;
+    margin-bottom: 16px;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+  body.is-admin .admin-bar { display: flex; }
+  .admin-bar-label { font-size: 0.82rem; font-weight: 700; color: #065f46; }
+  .admin-bar-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+  /* Tabs escritorio */
   .tabs {
     display: inline-flex; gap: 6px; background: #e2e8f0; padding: 4px;
-    border-radius: 12px; margin-bottom: 18px;
+    border-radius: 12px; margin-bottom: 16px;
   }
   .tab-btn {
-    background: transparent; border: none; padding: 8px 18px;
+    background: transparent; border: none; padding: 9px 18px;
     font-size: 0.92rem; font-weight: 600; color: #475569;
     cursor: pointer; border-radius: 9px; transition: all 0.15s ease;
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
   }
   .tab-btn.active { background: #fff; color: var(--primary); box-shadow: 0 2px 6px rgba(0,0,0,0.08); }
   .view-section { display: none; }
   .view-section.active { display: block; animation: fadeIn 0.2s ease; }
   @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 
-  /* Tarjetas generales */
+  /* Tarjetas */
   .card {
     background: var(--card); border-radius: var(--radius); padding: 18px;
     box-shadow: var(--shadow); border: 1px solid var(--border); margin-bottom: 16px;
@@ -98,36 +128,58 @@
     margin: 0 0 12px; font-size: 1rem; color: var(--text);
     display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap;
   }
-  #upcomingList { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 6px; }
-  .upcomingCard {
-    min-width: 215px; background: #f8fafc; border: 1px solid var(--border);
-    border-radius: 12px; padding: 12px; flex-shrink: 0;
-    display: flex; flex-direction: column; gap: 5px; font-size: 0.85rem;
-    transition: transform 0.15s ease;
+
+  /* Próximos cumpleaños */
+  #upcomingList {
+    display: flex; gap: 12px; overflow-x: auto; padding-bottom: 6px;
+    scroll-snap-type: x proximity; -webkit-overflow-scrolling: touch;
   }
-  .upcomingCard:hover { transform: translateY(-2px); border-color: #cbd5e1; }
-  .upcomingCard.is-today { background: #fffbeb; border: 1.5px solid #f59e0b; }
+  .upcomingCard {
+    min-width: 220px; background: #f8fafc; border: 1px solid var(--border);
+    border-radius: 13px; padding: 13px; flex-shrink: 0; scroll-snap-align: start;
+    display: flex; flex-direction: column; gap: 6px; font-size: 0.85rem;
+    cursor: pointer; transition: transform 0.15s ease, border-color 0.15s;
+  }
+  .upcomingCard:hover { transform: translateY(-2px); border-color: #94a3b8; }
+  .upcomingCard.is-today {
+    background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+    border: 1.5px solid #f59e0b;
+  }
+  .upcoming-top { display: flex; justify-content: space-between; align-items: center; gap: 6px; }
   .countdown-tag {
-    align-self: flex-start; font-size: 0.72rem; font-weight: 700;
+    font-size: 0.72rem; font-weight: 700;
     padding: 2px 8px; border-radius: 999px; background: #e0f2fe; color: #0369a1;
   }
   .upcomingCard.is-today .countdown-tag { background: #f59e0b; color: #fff; }
 
-  /* Buscador */
-  .search-wrap { position: relative; max-width: 420px; margin-bottom: 14px; }
+  /* Buscador + filtros rápidos */
+  .calendar-controls {
+    display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
+    justify-content: space-between; margin-bottom: 12px;
+  }
+  .search-wrap { position: relative; flex: 1; min-width: 240px; max-width: 440px; }
   .search-bar {
-    width: 100%; padding: 10px 14px; border: 1px solid #cbd5e1; border-radius: 10px;
-    font-size: 0.92rem; background: #fff; outline: none; transition: border-color 0.15s;
+    width: 100%; padding: 11px 36px 11px 14px; border: 1px solid #cbd5e1; border-radius: 12px;
+    font-size: 0.94rem; background: #fff; outline: none; transition: border-color 0.15s;
   }
   .search-bar:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(15,98,254,0.12); }
-  #searchResults { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+  .search-clear {
+    position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+    background: #e2e8f0; border: none; border-radius: 50%; width: 22px; height: 22px;
+    font-size: 0.75rem; cursor: pointer; display: none; color: #475569;
+  }
+  .search-clear.show { display: inline-flex; align-items: center; justify-content: center; }
+  #searchResults { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 14px; }
 
-  /* Navegación meses */
-  #monthNav { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+  /* Navegación de meses */
+  #monthNav {
+    display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px;
+  }
   #monthNav button {
-    background: #fff; border: 1px solid var(--border); padding: 7px 12px;
-    border-radius: 9px; cursor: pointer; font-weight: 600; font-size: 0.84rem;
+    background: #fff; border: 1px solid var(--border); padding: 8px 13px;
+    border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 0.85rem;
     color: #334155; transition: all 0.15s; display: inline-flex; align-items: center; gap: 5px;
+    flex-shrink: 0;
   }
   #monthNav button:hover:not(.active) { background: #f8fafc; border-color: #94a3b8; }
   #monthNav button.active { background: var(--primary); color: #fff; border-color: var(--primary); }
@@ -145,21 +197,24 @@
   }
   .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; }
   .day {
-    min-height: 92px; padding: 8px; border-radius: 10px;
+    min-height: 92px; padding: 8px; border-radius: 11px;
     background: #f8fafc; border: 1px solid var(--border);
-    display: flex; flex-direction: column; gap: 4px; font-size: 0.82rem;
+    display: flex; flex-direction: column; gap: 5px; font-size: 0.82rem;
   }
   .day.inactive { background: #f1f5f9; border-color: transparent; opacity: 0.45; }
   .day.today { background: #fffbeb; border: 2px solid #f59e0b; }
   .day-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px; }
-  .day .num { font-weight: 700; color: #334155; }
+  .day .num { font-weight: 800; color: #334155; }
   .day.today .num { color: #b45309; }
-  .day .weekday-mobile { display: none; font-size: 0.75rem; color: var(--muted); text-transform: capitalize; }
+  .day .weekday-mobile { display: none; font-size: 0.78rem; color: var(--muted); text-transform: capitalize; font-weight: 600; }
+  .empty-month-msg {
+    display: none; text-align: center; padding: 20px; color: var(--muted); font-size: 0.9rem;
+  }
 
   /* Badges categorías */
   .badge {
-    display: inline-block; padding: 3px 8px; border-radius: 8px;
-    font-size: 0.74rem; color: #fff; font-weight: 600; cursor: pointer;
+    display: inline-block; padding: 4px 9px; border-radius: 8px;
+    font-size: 0.75rem; color: #fff; font-weight: 600; cursor: pointer;
     line-height: 1.25; transition: transform 0.12s, opacity 0.12s;
     word-break: break-word;
   }
@@ -171,12 +226,12 @@
   .Casado { background: #7c3aed; }
 
   .legend {
-    display: flex; flex-wrap: wrap; gap: 14px; font-size: 0.84rem; color: var(--muted);
+    display: flex; flex-wrap: wrap; gap: 10px; font-size: 0.82rem; color: var(--muted);
     margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border);
   }
-  .legend-item { display: flex; align-items: center; gap: 6px; }
+  .legend-item { display: flex; align-items: center; gap: 5px; }
 
-  /* ================= ÁRBOL GENEALÓGICO HÍBRIDO ================= */
+  /* ================= ÁRBOL GENEALÓGICO ================= */
   .tree-toolbar {
     display: flex; justify-content: space-between; align-items: center;
     gap: 10px; flex-wrap: wrap; margin-bottom: 12px;
@@ -186,13 +241,10 @@
 
   .tree-canvas-wrap { position: relative; }
 
-  /* Cuadro de Estadísticas fijo arriba a la derecha — apertura por generación y sexo */
+  /* Cuadro de Estadísticas fijo arriba a la derecha */
   .tree-stats-card {
-    position: absolute;
-    top: 14px;
-    right: 14px;
-    z-index: 30;
-    width: 288px;
+    position: absolute; top: 14px; right: 14px; z-index: 30;
+    width: 286px;
     background: rgba(255, 255, 255, 0.96);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
@@ -200,83 +252,40 @@
     border-radius: 14px;
     padding: 13px 14px;
     box-shadow: 0 10px 28px rgba(15, 23, 42, 0.13);
-    transition: all 0.2s ease;
   }
-  .tree-stats-card.minimized { width: auto; padding: 8px 12px; }
+  .tree-stats-card.minimized { width: auto; padding: 9px 13px; }
   .tree-stats-card.minimized .stats-body { display: none; }
   .stats-header {
     display: flex; align-items: center; justify-content: space-between; gap: 8px;
-    font-size: 0.83rem; font-weight: 700; color: var(--text);
+    font-size: 0.83rem; font-weight: 700; color: var(--text); cursor: pointer;
   }
   .stats-toggle-btn {
     background: #f1f5f9; border: 1px solid #e2e8f0; color: #475569;
-    border-radius: 7px; padding: 2px 7px; font-size: 0.72rem; font-weight: 700; cursor: pointer;
+    border-radius: 7px; padding: 2px 8px; font-size: 0.74rem; font-weight: 700; cursor: pointer;
   }
-  .stats-toggle-btn:hover { background: #e2e8f0; }
-
-  .stats-gen-list {
-    display: flex;
-    flex-direction: column;
-    gap: 9px;
-    margin-top: 10px;
-  }
+  .stats-gen-list { display: flex; flex-direction: column; gap: 9px; margin-top: 10px; }
   .gen-stat-box {
-    background: #f8fafc;
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 8px 10px;
+    background: #f8fafc; border: 1px solid var(--border); border-radius: 10px; padding: 8px 10px;
   }
-  .gen-stat-head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 5px;
-  }
-  .gen-title-wrap {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 0.78rem;
-    font-weight: 700;
-    color: var(--text);
-  }
-  .gen-dot {
-    width: 9px;
-    height: 9px;
-    border-radius: 50%;
-    display: inline-block;
-  }
+  .gen-stat-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px; }
+  .gen-title-wrap { display: flex; align-items: center; gap: 6px; font-size: 0.78rem; font-weight: 700; }
+  .gen-dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
   .gen-dot.hijos { background: #2563eb; }
   .gen-dot.nietos { background: #16a34a; }
   .gen-dot.bisnietos { background: #ec4899; }
   .gen-total-pill {
-    font-size: 0.78rem;
-    font-weight: 800;
-    color: var(--text);
-    background: #fff;
-    border: 1px solid #cbd5e1;
-    padding: 1px 8px;
-    border-radius: 999px;
+    font-size: 0.78rem; font-weight: 800; background: #fff;
+    border: 1px solid #cbd5e1; padding: 1px 8px; border-radius: 999px;
   }
-  .gender-bar {
-    height: 8px; border-radius: 999px; overflow: hidden;
-    display: flex; background: #e2e8f0; margin-bottom: 5px;
-  }
+  .gender-bar { height: 8px; border-radius: 999px; overflow: hidden; display: flex; background: #e2e8f0; margin-bottom: 5px; }
   .gender-bar-m { background: linear-gradient(90deg, #3b82f6, #2563eb); transition: width 0.35s ease; }
   .gender-bar-f { background: linear-gradient(90deg, #f472b6, #db2777); transition: width 0.35s ease; }
-  .gender-labels {
-    display: flex; justify-content: space-between; gap: 6px; font-size: 0.73rem; font-weight: 600;
-  }
+  .gender-labels { display: flex; justify-content: space-between; gap: 6px; font-size: 0.73rem; font-weight: 600; }
   .g-male { color: var(--male); }
   .g-female { color: var(--female); }
   .stats-foot {
-    margin-top: 9px;
-    padding-top: 8px;
-    border-top: 1px solid var(--border);
-    font-size: 0.71rem;
-    color: var(--muted);
-    text-align: center;
-    line-height: 1.35;
+    margin-top: 9px; padding-top: 8px; border-top: 1px solid var(--border);
+    font-size: 0.71rem; color: var(--muted); text-align: center;
   }
 
   .tree-viewport {
@@ -286,11 +295,12 @@
     border: 1px solid var(--border);
     border-radius: 12px;
     overflow: auto;
-    min-height: 540px;
-    max-height: 78vh;
+    min-height: 520px;
+    max-height: 76vh;
     padding: 34px 28px 52px;
     cursor: grab;
     user-select: none;
+    -webkit-overflow-scrolling: touch;
   }
   .tree-viewport.grabbing { cursor: grabbing; }
 
@@ -301,72 +311,86 @@
     transition: transform 0.15s ease;
   }
 
-  /* Nivel 0: Raíz (Abuelos) */
+  /* Modo Acordeón Vertical (ideal para celular) */
+  .tree-viewport.vertical-mode {
+    padding: 16px 12px 28px;
+    max-height: none;
+    min-height: auto;
+    cursor: default;
+    background-image: none;
+  }
+  .tree-viewport.vertical-mode .tree-stage {
+    width: 100%;
+    transform: none !important;
+  }
+  .tree-viewport.vertical-mode .tree .level-root { display: block; }
+  .tree-viewport.vertical-mode .tree .level-root > li { align-items: stretch; }
+  .tree-viewport.vertical-mode .tree .branch-horizontal {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 10px 0 2px 14px;
+  }
+  .tree-viewport.vertical-mode .tree .branch-horizontal::before {
+    left: 14px; height: 10px;
+  }
+  .tree-viewport.vertical-mode .tree .branch-horizontal > li {
+    width: 100%;
+    padding: 6px 0 6px 14px;
+    align-items: stretch;
+  }
+  .tree-viewport.vertical-mode .tree .branch-horizontal > li::before {
+    top: 0; left: 0; right: auto; width: 0; height: 100%;
+    border-top: none; border-left: 2px solid #94a3b8; border-right: none; border-radius: 0;
+  }
+  .tree-viewport.vertical-mode .tree .branch-horizontal > li:last-child::before { height: 28px; }
+  .tree-viewport.vertical-mode .tree .branch-horizontal > li::after {
+    top: 28px; left: 0; right: auto; width: 14px; height: 0;
+    border-left: none; border-top: 2px solid #94a3b8; border-radius: 0;
+  }
+  .tree-viewport.vertical-mode .person-node.cat-Abuelos { width: 100%; }
+
+  /* Árbol Híbrido (Escritorio) */
   .tree ul { list-style: none; margin: 0; padding: 0; }
   .tree .level-root { display: flex; justify-content: center; }
   .tree .level-root > li { display: flex; flex-direction: column; align-items: center; position: relative; }
 
-  /* Nivel 1: Primera rama HORIZONTAL (Hijos / Tíos) */
   .tree .branch-horizontal {
-    display: flex;
-    flex-direction: row;
-    align-items: flex-start;
-    justify-content: center;
-    padding-top: 28px;
-    position: relative;
+    display: flex; flex-direction: row; align-items: flex-start;
+    justify-content: center; padding-top: 28px; position: relative;
   }
   .tree .branch-horizontal::before {
     content: ''; position: absolute; top: 0; left: 50%;
     border-left: 2px solid #94a3b8; width: 0; height: 28px; opacity: 0.65;
   }
   .tree .branch-horizontal > li {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    position: relative;
-    padding: 28px 9px 0 9px;
-    width: 246px;
-    flex-shrink: 0;
+    display: flex; flex-direction: column; align-items: center;
+    position: relative; padding: 28px 9px 0 9px; width: 246px; flex-shrink: 0;
   }
   .tree .branch-horizontal > li::before,
   .tree .branch-horizontal > li::after {
     content: ''; position: absolute; top: 0; right: 50%;
     border-top: 2px solid #94a3b8; width: 50%; height: 28px; opacity: 0.65;
   }
-  .tree .branch-horizontal > li::after {
-    right: auto; left: 50%; border-left: 2px solid #94a3b8;
-  }
+  .tree .branch-horizontal > li::after { right: auto; left: 50%; border-left: 2px solid #94a3b8; }
   .tree .branch-horizontal > li:only-child::before,
   .tree .branch-horizontal > li:only-child::after { display: none; }
   .tree .branch-horizontal > li:only-child { padding-top: 0; }
   .tree .branch-horizontal > li:first-child::before,
   .tree .branch-horizontal > li:last-child::after { border: 0 none; }
-  .tree .branch-horizontal > li:last-child::before {
-    border-right: 2px solid #94a3b8; border-radius: 0 10px 0 0;
-  }
-  .tree .branch-horizontal > li:first-child::after {
-    border-radius: 10px 0 0 0;
-  }
+  .tree .branch-horizontal > li:last-child::before { border-right: 2px solid #94a3b8; border-radius: 0 10px 0 0; }
+  .tree .branch-horizontal > li:first-child::after { border-radius: 10px 0 0 0; }
 
-  /* Nivel 2 en adelante: Ramas VERTICALES (Nietos -> Bisnietos) */
   .tree .branch-vertical {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    width: 100%;
-    padding: 10px 0 2px 16px;
-    position: relative;
+    display: flex; flex-direction: column; align-items: stretch;
+    width: 100%; padding: 10px 0 2px 14px; position: relative;
   }
   .tree .branch-vertical::before {
-    content: ''; position: absolute; top: 0; left: 16px;
+    content: ''; position: absolute; top: 0; left: 14px;
     height: 10px; border-left: 2px solid #94a3b8; opacity: 0.6;
   }
   .tree .branch-vertical > li {
-    position: relative;
-    padding: 6px 0 6px 14px;
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
+    position: relative; padding: 6px 0 6px 14px;
+    display: flex; flex-direction: column; align-items: stretch;
   }
   .tree .branch-vertical > li::before {
     content: ''; position: absolute; top: 0; left: 0;
@@ -380,7 +404,7 @@
 
   .tree ul.collapsed { display: none; }
 
-  /* Tarjetas de personas en el árbol */
+  /* Tarjetas nodos */
   .person-node {
     display: flex; flex-direction: column; align-items: center; gap: 4px;
     padding: 11px 11px 10px; border-radius: 13px; background: #fff;
@@ -388,10 +412,18 @@
     box-shadow: 0 3px 10px rgba(15, 23, 42, 0.06);
     width: 100%; text-align: center; position: relative; z-index: 2;
     transition: transform 0.15s ease, box-shadow 0.15s ease;
+    cursor: pointer;
   }
-  .person-node:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.11);
+  .person-node:hover { transform: translateY(-2px); box-shadow: 0 8px 18px rgba(15, 23, 42, 0.11); }
+  .person-node.highlight-pulse {
+    animation: pulseRing 1.8s ease;
+    border-color: #f59e0b;
+    box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.35);
+  }
+  @keyframes pulseRing {
+    0% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7); }
+    70% { box-shadow: 0 0 0 12px rgba(245, 158, 11, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
   }
   .person-node.cat-Abuelos {
     background: linear-gradient(180deg, #fffbeb 0%, #fef9c3 100%);
@@ -403,9 +435,7 @@
   .person-node.cat-Bisnieto { border-top-color: #ec4899; padding: 8px 9px; background: #fffbfe; }
   .person-node.cat-Casado { border-top-color: #7c3aed; }
 
-  .node-top-row {
-    display: flex; align-items: center; justify-content: center; gap: 6px; margin-bottom: 2px;
-  }
+  .node-top-row { display: flex; align-items: center; justify-content: center; gap: 6px; margin-bottom: 2px; }
   .avatar {
     width: 26px; height: 26px; border-radius: 50%;
     display: inline-flex; align-items: center; justify-content: center;
@@ -415,35 +445,31 @@
   .avatar.F { background: var(--female-bg); color: var(--female); border: 1px solid #f9a8d4; }
   .avatar.U { background: #e2e8f0; color: #475569; border: 1px solid #cbd5e1; }
 
-  .person-node strong { font-size: 0.83rem; line-height: 1.22; color: var(--text); }
-  .person-node.cat-Bisnieto strong { font-size: 0.79rem; }
-  .person-meta { font-size: 0.72rem; color: var(--muted); }
+  .person-node strong { font-size: 0.84rem; line-height: 1.22; color: var(--text); }
+  .person-node.cat-Bisnieto strong { font-size: 0.8rem; }
+  .person-meta { font-size: 0.73rem; color: var(--muted); }
 
   .spouse-tag {
-    font-size: 0.73rem; color: #4c1d95; background: #f5f3ff;
-    border: 1px solid #ddd6fe; padding: 5px 7px; border-radius: 9px;
+    font-size: 0.74rem; color: #4c1d95; background: #f5f3ff;
+    border: 1px solid #ddd6fe; padding: 5px 8px; border-radius: 9px;
     margin-top: 4px; width: 100%; line-height: 1.22;
     display: flex; flex-direction: column; align-items: center; gap: 2px;
   }
-  .spouse-name-row {
-    display: flex; align-items: center; justify-content: center; gap: 5px; font-weight: 700;
-  }
-  .mini-dot {
-    width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex-shrink: 0;
-  }
+  .spouse-name-row { display: flex; align-items: center; justify-content: center; gap: 5px; font-weight: 700; }
+  .mini-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
   .mini-dot.M { background: var(--male); }
   .mini-dot.F { background: var(--female); }
   .mini-dot.U { background: #94a3b8; }
 
   .branch-toggle {
     margin-top: 6px; background: #eff6ff; border: 1px solid #bfdbfe; color: #1d4ed8;
-    border-radius: 999px; padding: 3px 10px; font-size: 0.72rem; font-weight: 700;
+    border-radius: 999px; padding: 5px 12px; font-size: 0.75rem; font-weight: 700;
     cursor: pointer; transition: all 0.15s;
   }
-  .branch-toggle:hover { background: #dbeafe; transform: scale(1.03); }
+  .branch-toggle:hover { background: #dbeafe; }
 
   .edit-icon {
-    cursor: pointer; font-size: 0.7rem; padding: 2px 7px; border-radius: 6px;
+    cursor: pointer; font-size: 0.72rem; padding: 3px 8px; border-radius: 6px;
     background: #fff; border: 1px solid #93c5fd; color: #1d4ed8;
     display: none; margin-top: 3px; font-weight: 600;
   }
@@ -457,43 +483,126 @@
   .unlinked-list { display: flex; flex-wrap: wrap; gap: 10px; }
   .unlinked-list .person-node { width: 175px; }
 
-  /* Modal */
+  /* Modales y Bottom Sheet en móvil */
   .modal-backdrop {
     display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.55);
     backdrop-filter: blur(2px); justify-content: center; align-items: center;
-    z-index: 200; padding: 16px;
+    z-index: 300; padding: 16px;
   }
   .modal-backdrop.open { display: flex; }
   .modal {
-    background: #fff; border-radius: 16px; padding: 22px; width: 100%; max-width: 450px;
-    box-shadow: 0 20px 40px rgba(15, 23, 42, 0.25); max-height: 92vh; overflow-y: auto;
+    background: #fff; border-radius: 18px; padding: 22px; width: 100%; max-width: 460px;
+    box-shadow: 0 20px 40px rgba(15, 23, 42, 0.25); max-height: 90vh; overflow-y: auto;
   }
   .modal h3 { margin: 0 0 14px; color: var(--text); font-size: 1.15rem; }
   .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .form-group { margin-bottom: 12px; }
   .form-group label { display: block; font-size: 0.82rem; font-weight: 700; color: #334155; margin-bottom: 4px; }
   .form-group input, .form-group select {
-    width: 100%; padding: 9px 10px; border: 1px solid #cbd5e1; border-radius: 8px;
-    font-size: 0.9rem; background: #fff;
+    width: 100%; padding: 10px 11px; border: 1px solid #cbd5e1; border-radius: 10px;
+    font-size: 0.94rem; background: #fff;
   }
-  .modal-actions { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-top: 18px; }
+  .form-help { font-size: 0.76rem; color: var(--muted); margin-top: 4px; line-height: 1.35; }
+  .modal-actions { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-top: 18px; flex-wrap: wrap; }
   .modal-actions-right { display: flex; gap: 8px; margin-left: auto; }
 
-  /* Responsive móvil */
+  /* Ficha de detalle de persona */
+  .detail-header { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+  .detail-avatar {
+    width: 48px; height: 48px; border-radius: 50%; font-size: 1.05rem; font-weight: 800;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .detail-avatar.M { background: var(--male-bg); color: var(--male); border: 2px solid #93c5fd; }
+  .detail-avatar.F { background: var(--female-bg); color: var(--female); border: 2px solid #f9a8d4; }
+  .detail-avatar.U { background: #e2e8f0; color: #475569; }
+  .detail-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px;
+  }
+  .detail-box {
+    background: #f8fafc; border: 1px solid var(--border); border-radius: 10px; padding: 9px 11px;
+  }
+  .detail-box small { display: block; font-size: 0.71rem; color: var(--muted); font-weight: 600; text-transform: uppercase; }
+  .detail-box strong { font-size: 0.88rem; color: var(--text); }
+  .detail-relations { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; font-size: 0.86rem; }
+  .detail-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+  .detail-actions .btn { flex: 1; min-width: 140px; }
+
+  /* Navegación fija inferior solo en celular */
+  .mobile-bottom-nav { display: none; }
+
+  /* ================= RESPONSIVE CELULAR ================= */
   @media (max-width: 760px) {
-    header { padding: 14px 16px; }
-    .brand h1 { font-size: 1.2rem; }
+    body { padding: 10px 10px 88px; }
+    header { padding: 13px 14px; margin-bottom: 12px; border-radius: 14px; }
+    .brand h1 { font-size: 1.18rem; }
+    .top-actions { width: 100%; }
+    .top-actions .btn { flex: 1; font-size: 0.82rem; padding: 9px 10px; }
+
+    .tabs { display: none; } /* Reemplazado por barra inferior fija */
+    .mobile-bottom-nav {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      z-index: 150;
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-top: 1px solid #cbd5e1;
+      padding: 8px 12px calc(8px + env(safe-area-inset-bottom));
+      box-shadow: 0 -4px 16px rgba(15, 23, 42, 0.08);
+    }
+    .mobile-bottom-nav .tab-btn {
+      padding: 10px 12px; font-size: 0.9rem; border-radius: 11px;
+    }
+    .mobile-bottom-nav .tab-btn.active {
+      background: #eff6ff; color: var(--primary); box-shadow: none; border: 1px solid #bfdbfe;
+    }
+
+    .card { padding: 14px; border-radius: 14px; margin-bottom: 12px; }
+
+    /* Meses en una fila deslizable */
+    #monthNav {
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      padding-bottom: 6px;
+      margin-bottom: 10px;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    #monthNav::-webkit-scrollbar { display: none; }
+    #monthNav button { padding: 9px 14px; font-size: 0.86rem; }
+
+    /* Agenda móvil en el calendario */
     .weekdays-header { display: none; }
     .calendar-grid { grid-template-columns: 1fr; gap: 8px; }
     .day.inactive { display: none; }
     .day.no-events:not(.today) { display: none; }
-    .day { min-height: auto; padding: 10px 12px; }
+    .day {
+      min-height: auto; padding: 12px; border-radius: 12px;
+      background: #fff; border: 1px solid var(--border);
+    }
     .day .weekday-mobile { display: inline; }
+    .day .badge { padding: 7px 10px; font-size: 0.84rem; width: 100%; }
+    .empty-month-msg.show { display: block; }
+
+    /* Árbol y estadísticas en móvil */
     .tree-stats-card {
-      position: static;
-      width: 100%;
-      margin-bottom: 12px;
-      box-shadow: none;
+      position: static; width: 100%; margin-bottom: 12px; box-shadow: none;
+    }
+    .tree-toolbar { flex-direction: column; align-items: stretch; }
+    .tree-controls { justify-content: center; }
+    .tree-controls .btn { flex: 1; font-size: 0.8rem; padding: 8px 9px; }
+    .zoom-controls-wrap.hide-in-vertical { display: none; }
+    .unlinked-list .person-node { width: 100%; }
+
+    /* Modales como Bottom Sheet en celular */
+    .modal-backdrop { align-items: flex-end; padding: 0; }
+    .modal {
+      border-radius: 20px 20px 0 0;
+      padding: 20px 18px calc(22px + env(safe-area-inset-bottom));
+      max-width: 100%;
     }
     .form-row { grid-template-columns: 1fr; }
   }
@@ -509,33 +618,43 @@
       <span>•</span>
       <span id="statsLabel">Cargando...</span>
       <span id="syncStatus" class="sync-pill">⚡ Cargando...</span>
-      <span class="ver-tag">v5</span>
+      <span class="ver-tag">v6</span>
     </div>
   </div>
   <div class="top-actions">
-    <button class="btn" onclick="subscribeEmail()">🔔 Avisos por correo</button>
-    <button id="btnAdmin" class="btn btn-admin" onclick="toggleAdmin()">🔒 Modo Admin</button>
-    <button id="btnAdd" class="btn btn-primary" style="display:none;" onclick="openModal()">+ Agregar</button>
-    <button id="btnSeed" class="btn" style="display:none;" onclick="syncInitialToFirebase()">☁️ Sincronizar base</button>
+    <button class="btn" onclick="subscribeEmail()">🔔 Avisos correo</button>
+    <button id="btnAdmin" class="btn btn-admin" onclick="toggleAdmin()">🔒 Admin</button>
   </div>
 </header>
 
+<!-- BARRA DE HERRAMIENTAS SOLO VISIBLE EN MODO ADMIN -->
+<div class="admin-bar">
+  <span class="admin-bar-label">🔓 Modo Administrador activo</span>
+  <div class="admin-bar-actions">
+    <button class="btn btn-primary" onclick="openModal()">+ Agregar familiar</button>
+    <button class="btn" onclick="openTestEmailModal()">📧 Probar correo</button>
+    <button class="btn" onclick="syncInitialToFirebase()">☁️ Sincronizar base</button>
+  </div>
+</div>
+
+<!-- PESTAÑAS ESCRITORIO -->
 <div class="tabs">
-  <button class="tab-btn active" onclick="switchTab('calendar', this)">📅 Calendario</button>
-  <button class="tab-btn" onclick="switchTab('tree', this)">🌳 Árbol Genealógico</button>
+  <button class="tab-btn active" data-tab="calendar" onclick="switchTab('calendar')">📅 Calendario</button>
+  <button class="tab-btn" data-tab="tree" onclick="switchTab('tree')">🌳 Árbol Genealógico</button>
 </div>
 
 <!-- VISTA CALENDARIO -->
 <div id="view-calendar" class="view-section active">
   <section class="card">
-    <h3 class="section-title">
-      <span>🎉 Próximos 14 días</span>
-    </h3>
+    <h3 class="section-title"><span>🎉 Próximos 14 días</span></h3>
     <div id="upcomingList"></div>
   </section>
 
-  <div class="search-wrap">
-    <input type="text" id="searchInput" class="search-bar" placeholder="🔍 Buscar familiar por nombre..." oninput="renderSearch()">
+  <div class="calendar-controls">
+    <div class="search-wrap">
+      <input type="text" id="searchInput" class="search-bar" placeholder="🔍 Buscar familiar por nombre..." oninput="renderSearch()">
+      <button id="searchClearBtn" class="search-clear" onclick="clearSearch()" aria-label="Limpiar">✕</button>
+    </div>
   </div>
   <div id="searchResults"></div>
 
@@ -560,25 +679,23 @@
       <div class="tree-controls">
         <button class="btn" onclick="setTreeDepth(1)">🌳 Abuelos e Hijos</button>
         <button class="btn" onclick="setTreeDepth(2)">🌿 Hasta Nietos</button>
-        <button class="btn" onclick="setTreeDepth(99)">📂 Todo abierto</button>
+        <button class="btn" onclick="setTreeDepth(99)">📂 Todo</button>
+        <button id="btnTreeLayout" class="btn" onclick="toggleTreeLayout()">📱 Vista Lista</button>
       </div>
-      <div class="tree-controls">
+      <div id="zoomControlsWrap" class="tree-controls zoom-controls-wrap">
         <button class="btn" onclick="changeZoom(-0.15)" title="Alejar">➖</button>
         <span id="zoomLabel" class="zoom-label">100%</span>
         <button class="btn" onclick="changeZoom(0.15)" title="Acercar">➕</button>
         <button class="btn" onclick="resetZoom()">🎯 Centrar</button>
       </div>
     </div>
-    <p style="margin:0 0 12px; color:var(--muted); font-size:0.84rem;">
-      La primera rama (hijos) se muestra en horizontal y cada descendencia se despliega en vertical hacia abajo. Arrastra el fondo para desplazarte.
-    </p>
 
     <div class="tree-canvas-wrap">
-      <!-- CUADRO DE ESTADÍSTICAS ARRIBA A LA DERECHA (3 APERTURAS POR SEXO) -->
+      <!-- CUADRO DE ESTADÍSTICAS -->
       <aside id="treeStatsCard" class="tree-stats-card">
-        <div class="stats-header">
+        <div class="stats-header" onclick="toggleStatsCard()">
           <span>📊 Descendencia por sexo</span>
-          <button class="stats-toggle-btn" onclick="toggleStatsCard()" id="statsToggleBtn" title="Ocultar / mostrar">−</button>
+          <button class="stats-toggle-btn" id="statsToggleBtn" type="button">−</button>
         </div>
         <div class="stats-body">
           <div id="statsGenList" class="stats-gen-list"></div>
@@ -597,8 +714,21 @@
   </section>
 </div>
 
-<!-- MODAL AGREGAR / EDITAR -->
-<div id="personModal" class="modal-backdrop">
+<!-- BARRA INFERIOR FIJA PARA CELULAR -->
+<nav class="mobile-bottom-nav">
+  <button class="tab-btn active" data-tab="calendar" onclick="switchTab('calendar')">📅 Calendario</button>
+  <button class="tab-btn" data-tab="tree" onclick="switchTab('tree')">🌳 Árbol Familiar</button>
+</nav>
+
+<!-- MODAL FICHA DE PERSONA (PARA TODA LA FAMILIA) -->
+<div id="detailModal" class="modal-backdrop" onclick="if(event.target===this) closeDetailModal()">
+  <div class="modal">
+    <div id="detailContent"></div>
+  </div>
+</div>
+
+<!-- MODAL AGREGAR / EDITAR (MODO ADMIN) -->
+<div id="personModal" class="modal-backdrop" onclick="if(event.target===this) closeModal()">
   <div class="modal">
     <h3 id="modalTitle">Agregar Persona</h3>
     <input type="hidden" id="f_id">
@@ -648,6 +778,40 @@
   </div>
 </div>
 
+<!-- MODAL PROBAR ENVÍO DE CORREO (MODO ADMIN) -->
+<div id="testEmailModal" class="modal-backdrop" onclick="if(event.target===this) closeTestEmailModal()">
+  <div class="modal">
+    <h3>📧 Probar envío de correo</h3>
+    <p style="margin:0 0 12px; font-size:0.86rem; color:var(--muted);">
+      Envía un correo de prueba <strong>solo a tu mail</strong> usando GitHub Actions para confirmar que Firebase y Gmail están funcionando (no envía nada a la familia).
+    </p>
+    <div class="form-group">
+      <label>Correo donde quieres recibir la prueba</label>
+      <input type="email" id="te_email" placeholder="tu-correo@gmail.com">
+    </div>
+    <div class="form-group">
+      <label>Repositorio de GitHub (usuario/repositorio)</label>
+      <input type="text" id="te_repo" placeholder="usuario/cumpleanos-cruzat">
+      <div class="form-help">Se detecta automáticamente al abrir desde GitHub Pages.</div>
+    </div>
+    <div class="form-group">
+      <label>Token de GitHub (solo se guarda en este dispositivo)</label>
+      <input type="password" id="te_token" placeholder="github_pat_...">
+      <div class="form-help">
+        Créalo una sola vez en GitHub → Settings → Developer settings → Fine-grained tokens (permiso <strong>Actions: Read and write</strong> en este repo).
+      </div>
+    </div>
+    <div id="te_status" style="font-size:0.84rem; margin-top:8px;"></div>
+    <div class="modal-actions">
+      <a id="te_manualLink" class="btn" href="#" target="_blank" rel="noopener">↗️ Abrir Actions</a>
+      <div class="modal-actions-right">
+        <button class="btn" onclick="closeTestEmailModal()">Cerrar</button>
+        <button id="btnSendTestEmail" class="btn btn-primary" onclick="triggerTestEmail()">Enviar prueba</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
 // ⚙️ PEGA AQUÍ TUS 6 CLAVES DE FIREBASE (Configuración del proyecto -> General -> Tus apps)
 const firebaseConfig = {
@@ -659,7 +823,7 @@ const firebaseConfig = {
   appId: "1:156654089118:web:bcf9425bc72ececaff5c8f"
 };
 
-// --- BASE INICIAL CON SEXO DEFINIDO PARA TODOS (152 personas) ---
+// --- BASE INICIAL CON SEXO DEFINIDO (152 personas) ---
 const INITIAL_BIRTHDAYS = [
   // ABUELOS
   { id: "p_1", name: "Manuel Cruzat Infante", date: "1940-05-10", gender: "M", category: "Abuelos", parentId: "", spouseId: "p_2" },
@@ -850,7 +1014,11 @@ const INITIAL_BIRTHDAYS = [
 
 const INITIAL_GENDER_BY_ID = Object.fromEntries(INITIAL_BIRTHDAYS.map(p => [p.id, p.gender]));
 
-const CACHE_KEY = "cruzat_people_cache_v5";
+const CACHE_KEY = "cruzat_people_cache_v6";
+const GH_TOKEN_KEY = "cruzat_gh_admin_token";
+const GH_REPO_KEY = "cruzat_gh_admin_repo";
+const GH_EMAIL_KEY = "cruzat_gh_test_email";
+
 const monthNames = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
 const shortMonths = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
 
@@ -859,6 +1027,7 @@ let adminUnlocked = false;
 let currentMonth = new Date().getMonth();
 let currentTreeDepth = 1;
 let treeZoom = 1;
+let treeVerticalMode = window.innerWidth <= 760;
 let fb = null;
 
 // --- UTILIDADES ---
@@ -878,9 +1047,24 @@ function formatShortDate(dateStr) {
   return p ? `${p.d} ${shortMonths[p.m]}` : "Sin fecha";
 }
 
+function formatLongDate(dateStr) {
+  const p = parseDateParts(dateStr);
+  return p ? `${p.d} de ${monthNames[p.m]} de ${p.y}` : "Sin fecha";
+}
+
 function ageForYear(dateStr, targetYear = new Date().getFullYear()) {
   const p = parseDateParts(dateStr);
   return p ? targetYear - p.y : "?";
+}
+
+function daysUntilBirthday(dateStr) {
+  const p = parseDateParts(dateStr);
+  if (!p) return null;
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  let next = new Date(now.getFullYear(), p.m, p.d);
+  if (next < today) next = new Date(now.getFullYear() + 1, p.m, p.d);
+  return Math.round((next - today) / 86400000);
 }
 
 function getInitials(name) {
@@ -916,10 +1100,10 @@ function saveLocalCache() {
   try { localStorage.setItem(CACHE_KEY, JSON.stringify(PEOPLE)); } catch {}
 }
 
-// --- CARGA INSTANTÁNEA (CACHE-FIRST) + FIREBASE EN SEGUNDO PLANO ---
+// --- ARRANQUE INSTANTÁNEO ---
 function bootInstant() {
   document.getElementById("today").textContent = new Date().toLocaleDateString("es-CL", {
-    weekday: "long", day: "numeric", month: "long", year: "numeric"
+    weekday: "short", day: "numeric", month: "short", year: "numeric"
   });
 
   try {
@@ -929,6 +1113,13 @@ function bootInstant() {
     PEOPLE = INITIAL_BIRTHDAYS.map(sanitizePerson);
   }
 
+  // En celular, iniciar cuadro de estadísticas minimizado para ahorrar espacio
+  if (window.innerWidth <= 760) {
+    document.getElementById("treeStatsCard").classList.add("minimized");
+    document.getElementById("statsToggleBtn").textContent = "+";
+  }
+
+  applyTreeLayoutClass();
   renderAll();
   setupTreeDrag();
   initFirebaseBackground();
@@ -956,11 +1147,11 @@ async function initFirebaseBackground() {
       renderAll();
       setStatus("🟢 En línea", "ok");
     } else {
-      setStatus("🟡 Firebase vacío (usa Sincronizar en Admin)", "warn");
+      setStatus("🟡 Firebase vacío (usa Sincronizar)", "warn");
     }
   } catch (e) {
     console.error("Error Firebase:", e);
-    setStatus("⚠️ Sin conexión a Firebase (caché)", "warn");
+    setStatus("⚠️ Sin conexión (caché)", "warn");
   }
 }
 
@@ -973,13 +1164,10 @@ function renderAll() {
   renderTree(currentTreeDepth);
 }
 
-// --- ESTADÍSTICAS DEL ÁRBOL: APERTURA SEPARADA POR GENERACIÓN Y SEXO ---
+// --- ESTADÍSTICAS DEL ÁRBOL ---
 function buildGenStatHtml(label, dotClass, list) {
   let m = 0, f = 0;
-  list.forEach(p => {
-    if (p.gender === "M") m++;
-    else if (p.gender === "F") f++;
-  });
+  list.forEach(p => { if (p.gender === "M") m++; else if (p.gender === "F") f++; });
   const total = list.length;
   const defined = m + f;
   const mPct = defined ? ((m / defined) * 100).toFixed(1) : "0.0";
@@ -1002,14 +1190,10 @@ function buildGenStatHtml(label, dotClass, list) {
 }
 
 function renderTreeStats() {
-  const abueloIds = new Set(
-    PEOPLE.filter(p => p.category.toLowerCase().includes("abuelo")).map(p => p.id)
-  );
-
+  const abueloIds = new Set(PEOPLE.filter(p => p.category.toLowerCase().includes("abuelo")).map(p => p.id));
   const hijos = abueloIds.size
     ? PEOPLE.filter(p => abueloIds.has(p.parentId))
     : PEOPLE.filter(p => p.category === "Tio" && p.parentId);
-
   const nietos = PEOPLE.filter(p => p.category === "Nieto");
   const bisnietos = PEOPLE.filter(p => p.category === "Bisnieto");
 
@@ -1038,8 +1222,15 @@ function renderNav() {
   PEOPLE.forEach(p => { const d = parseDateParts(p.date); if (d) counts[d.m]++; });
 
   nav.innerHTML = monthNames.map((mn, idx) =>
-    `<button class="${idx === currentMonth ? 'active' : ''}" onclick="selectMonth(${idx})">${mn} <span class="m-count">${counts[idx]}</span></button>`
+    `<button class="${idx === currentMonth ? 'active' : ''}" data-month="${idx}" onclick="selectMonth(${idx})">${mn} <span class="m-count">${counts[idx]}</span></button>`
   ).join("");
+
+  requestAnimationFrame(() => {
+    const activeBtn = nav.querySelector("button.active");
+    if (activeBtn && nav.scrollWidth > nav.clientWidth) {
+      nav.scrollLeft = activeBtn.offsetLeft - (nav.clientWidth / 2) + (activeBtn.clientWidth / 2);
+    }
+  });
 }
 
 function selectMonth(idx) {
@@ -1056,15 +1247,17 @@ function renderMonth(monthIndex) {
   const today = new Date();
 
   const byDay = {};
+  let totalInMonth = 0;
   PEOPLE.forEach(p => {
     const parts = parseDateParts(p.date);
     if (parts && parts.m === monthIndex) {
       if (!byDay[parts.d]) byDay[parts.d] = [];
       byDay[parts.d].push(p);
+      totalInMonth++;
     }
   });
 
-  let html = `<h3 class="section-title" style="justify-content:center; font-size:1.25rem; color:var(--primary);">${monthNames[monthIndex]} ${year}</h3>`;
+  let html = `<h3 class="section-title" style="justify-content:center; font-size:1.2rem; color:var(--primary);">${monthNames[monthIndex]} ${year}</h3>`;
   html += `<div class="weekdays-header"><div>Lun</div><div>Mar</div><div>Mié</div><div>Jue</div><div>Vie</div><div>Sáb</div><div>Dom</div></div>`;
   html += `<div class="calendar-grid">`;
 
@@ -1078,14 +1271,15 @@ function renderMonth(monthIndex) {
     const wd = new Date(year, monthIndex, d).toLocaleDateString("es-CL", { weekday: "long" });
     const cls = `day ${isToday ? 'today' : ''} ${list.length === 0 ? 'no-events' : ''}`;
 
-    html += `<div class="${cls}"><div class="day-head"><span class="num">${d}</span><span class="weekday-mobile">${wd}</span></div>`;
+    html += `<div class="${cls}"><div class="day-head"><span class="num">${d} ${isToday ? '• Hoy' : ''}</span><span class="weekday-mobile">${wd}</span></div>`;
     list.forEach(b => {
       const cat = b.category.replace(/\s+/g, "");
-      html += `<div class="badge ${esc(cat)}" onclick="onBadgeClick('${esc(b.id)}')">${esc(b.name)} (${ageForYear(b.date, year)})</div>`;
+      html += `<div class="badge ${esc(cat)}" onclick="onPersonClick('${esc(b.id)}')">${esc(b.name)} (${ageForYear(b.date, year)})</div>`;
     });
     html += `</div>`;
   }
   html += `</div>`;
+  html += `<div class="empty-month-msg ${totalInMonth === 0 ? 'show' : ''}">No hay cumpleaños registrados en ${monthNames[monthIndex]}.</div>`;
   container.innerHTML = html;
 }
 
@@ -1114,17 +1308,23 @@ function renderUpcoming() {
     const label = daysLeft === 0 ? "¡HOY! 🎂" : daysLeft === 1 ? "Mañana" : `En ${daysLeft} días`;
     const dateTxt = dateObj.toLocaleDateString("es-CL", { weekday: "short", day: "numeric", month: "long" });
     const cat = person.category.replace(/\s+/g, "");
-    return `<div class="upcomingCard ${daysLeft === 0 ? 'is-today' : ''}">
-      <span class="countdown-tag">${label}</span>
-      <strong style="font-size:0.92rem;">${esc(person.name)}</strong>
+    return `<div class="upcomingCard ${daysLeft === 0 ? 'is-today' : ''}" onclick="onPersonClick('${esc(person.id)}')">
+      <div class="upcoming-top">
+        <span class="countdown-tag">${label}</span>
+        <span class="badge ${esc(cat)}">${esc(person.category)}</span>
+      </div>
+      <strong style="font-size:0.94rem;">${esc(person.name)}</strong>
       <div style="color:var(--muted);">${dateTxt} • Cumple <strong>${turningAge}</strong></div>
-      <span class="badge ${esc(cat)}" style="align-self:flex-start;" onclick="onBadgeClick('${esc(person.id)}')">${esc(person.category)}</span>
     </div>`;
   }).join("");
 }
 
 function renderSearch() {
-  const q = document.getElementById("searchInput").value.toLowerCase().trim();
+  const input = document.getElementById("searchInput");
+  const clearBtn = document.getElementById("searchClearBtn");
+  const q = input.value.toLowerCase().trim();
+  clearBtn.classList.toggle("show", q.length > 0);
+
   const box = document.getElementById("searchResults");
   if (!q) { box.innerHTML = ""; return; }
   const matches = PEOPLE.filter(p => p.name.toLowerCase().includes(q)).slice(0, 20);
@@ -1134,22 +1334,101 @@ function renderSearch() {
   }
   box.innerHTML = matches.map(p => {
     const cat = p.category.replace(/\s+/g, "");
-    return `<span class="badge ${esc(cat)}" onclick="jumpToPerson('${esc(p.id)}')">${esc(p.name)} — ${formatShortDate(p.date)} (${ageForYear(p.date)} años)</span>`;
+    return `<span class="badge ${esc(cat)}" onclick="onPersonClick('${esc(p.id)}')">${esc(p.name)} — ${formatShortDate(p.date)} (${ageForYear(p.date)} años)</span>`;
   }).join("");
 }
 
-function jumpToPerson(id) {
+function clearSearch() {
+  document.getElementById("searchInput").value = "";
+  renderSearch();
+}
+
+// --- FICHA DE PERSONA (TOCAR NOMBRE EN MODO NORMAL) ---
+function onPersonClick(id) {
   if (adminUnlocked) { openModal(id); return; }
+  openDetailModal(id);
+}
+
+function openDetailModal(id) {
   const p = PEOPLE.find(x => x.id === id);
-  const parts = p && parseDateParts(p.date);
-  if (parts) { selectMonth(parts.m); }
+  if (!p) return;
+
+  const byId = Object.fromEntries(PEOPLE.map(x => [x.id, x]));
+  const parent = p.parentId ? byId[p.parentId] : null;
+  const spouse = (p.spouseId && byId[p.spouseId]) || PEOPLE.find(x => x.spouseId === p.id) || null;
+  const children = PEOPLE.filter(c => c.parentId === p.id || (spouse && c.parentId === spouse.id))
+    .sort((a, b) => (a.date || "").localeCompare(b.date || ""));
+
+  const daysLeft = daysUntilBirthday(p.date);
+  const countdown = daysLeft === 0 ? "¡Hoy está de cumpleaños! 🎉" : daysLeft === 1 ? "Mañana" : `En ${daysLeft} días`;
+  const g = p.gender || "U";
+  const cat = p.category.replace(/\s+/g, "");
+  const firstName = p.name.split(" ")[0];
+  const waText = encodeURIComponent(`¡Muy feliz cumpleaños ${firstName}! 🎂🎉 Que tengas un tremendo día.`);
+
+  let relHtml = "";
+  if (parent) relHtml += `<div>👨‍👩‍👧 <strong>Padre/Madre:</strong> ${esc(parent.name)}</div>`;
+  if (spouse) relHtml += `<div>💍 <strong>Pareja:</strong> ${esc(spouse.name)}</div>`;
+  if (children.length) relHtml += `<div>👶 <strong>Hijos (${children.length}):</strong> ${children.map(c => esc(c.name.split(" ")[0])).join(", ")}</div>`;
+
+  document.getElementById("detailContent").innerHTML = `
+    <div class="detail-header">
+      <div class="detail-avatar ${g}">${esc(getInitials(p.name))}</div>
+      <div>
+        <h3 style="margin:0 0 4px;">${esc(p.name)}</h3>
+        <span class="badge ${esc(cat)}">${esc(p.category)}</span>
+      </div>
+    </div>
+    <div class="detail-grid">
+      <div class="detail-box"><small>Nacimiento</small><strong>${formatLongDate(p.date)}</strong></div>
+      <div class="detail-box"><small>Edad este año</small><strong>${ageForYear(p.date)} años</strong></div>
+      <div class="detail-box" style="grid-column:1 / -1;"><small>Próximo cumpleaños</small><strong>${countdown}</strong></div>
+    </div>
+    ${relHtml ? `<div class="detail-relations">${relHtml}</div>` : ""}
+    <div class="detail-actions">
+      <a class="btn btn-whatsapp" href="https://wa.me/?text=${waText}" target="_blank" rel="noopener">💬 Saludar WhatsApp</a>
+      <button class="btn btn-primary" onclick="locateInTree('${esc(p.id)}')">🌳 Ver en el árbol</button>
+      <button class="btn" onclick="closeDetailModal()">Cerrar</button>
+    </div>
+  `;
+  document.getElementById("detailModal").classList.add("open");
 }
 
-function onBadgeClick(id) {
-  if (adminUnlocked) openModal(id);
+function closeDetailModal() {
+  document.getElementById("detailModal").classList.remove("open");
 }
 
-// ================= ÁRBOL HÍBRIDO (NIVEL 1 HORIZONTAL, RESTO VERTICAL) =================
+function locateInTree(id) {
+  closeDetailModal();
+  switchTab("tree");
+  setTreeDepth(99);
+  requestAnimationFrame(() => {
+    const el = document.querySelector(`[data-person-id="${id}"]`);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "center", inline: "center" });
+      el.classList.remove("highlight-pulse");
+      void el.offsetWidth;
+      el.classList.add("highlight-pulse");
+    }
+  });
+}
+
+// ================= ÁRBOL GENEALÓGICO =================
+function applyTreeLayoutClass() {
+  const vp = document.getElementById("treeViewport");
+  const btn = document.getElementById("btnTreeLayout");
+  const zoomWrap = document.getElementById("zoomControlsWrap");
+  vp.classList.toggle("vertical-mode", treeVerticalMode);
+  zoomWrap.classList.toggle("hide-in-vertical", treeVerticalMode);
+  btn.textContent = treeVerticalMode ? "🗺️ Vista Mapa" : "📱 Vista Lista";
+}
+
+function toggleTreeLayout() {
+  treeVerticalMode = !treeVerticalMode;
+  applyTreeLayoutClass();
+  if (!treeVerticalMode) requestAnimationFrame(centerTreeViewport);
+}
+
 function renderTree(expandDepth = currentTreeDepth) {
   currentTreeDepth = expandDepth;
   const root = document.getElementById("treeRoot");
@@ -1181,24 +1460,24 @@ function renderTree(expandDepth = currentTreeDepth) {
     const g = person.gender || "U";
     const gTitle = g === "M" ? "Masculino" : g === "F" ? "Femenino" : "Sin definir";
 
-    let html = `<li><div class="person-node cat-${esc(cat)}">
+    let html = `<li><div class="person-node cat-${esc(cat)}" data-person-id="${esc(person.id)}" onclick="onPersonClick('${esc(person.id)}')">
       <div class="node-top-row">
         <span class="avatar ${g}" title="${gTitle}">${esc(getInitials(person.name))}</span>
         <span class="badge ${esc(cat)}">${esc(person.category)}</span>
       </div>
       <strong>${esc(person.name)}</strong>
       <div class="person-meta">${formatShortDate(person.date)} • ${ageForYear(person.date)} años</div>
-      <button class="edit-icon" onclick="openModal('${esc(person.id)}')">✏️ Editar</button>`;
+      <button class="edit-icon" onclick="event.stopPropagation(); openModal('${esc(person.id)}')">✏️ Editar</button>`;
 
     if (spouse) {
       const sg = spouse.gender || "U";
-      html += `<div class="spouse-tag">
+      html += `<div class="spouse-tag" data-person-id="${esc(spouse.id)}" onclick="event.stopPropagation(); onPersonClick('${esc(spouse.id)}')">
         <div class="spouse-name-row">
           <span class="mini-dot ${sg}"></span>
           <span>💍 ${esc(spouse.name)}</span>
         </div>
         <small>${formatShortDate(spouse.date)} • ${ageForYear(spouse.date)} años</small>
-        <button class="edit-icon" onclick="openModal('${esc(spouse.id)}')">✏️ Editar</button>
+        <button class="edit-icon" onclick="event.stopPropagation(); openModal('${esc(spouse.id)}')">✏️ Editar</button>
       </div>`;
     }
 
@@ -1206,7 +1485,7 @@ function renderTree(expandDepth = currentTreeDepth) {
       const label = isCollapsed
         ? `▼ ${children.length} hijo${children.length > 1 ? 's' : ''}`
         : `▲ Ocultar (${children.length})`;
-      html += `<button class="branch-toggle" data-count="${children.length}" onclick="toggleBranch(this)">${label}</button>`;
+      html += `<button class="branch-toggle" data-count="${children.length}" onclick="event.stopPropagation(); toggleBranch(this)">${label}</button>`;
     }
 
     html += `</div>`;
@@ -1233,14 +1512,14 @@ function renderTree(expandDepth = currentTreeDepth) {
       unlinked.map(p => {
         const g = p.gender || "U";
         const cat = p.category.replace(/\s+/g, "");
-        return `<div class="person-node cat-${esc(cat)}">
+        return `<div class="person-node cat-${esc(cat)}" data-person-id="${esc(p.id)}" onclick="onPersonClick('${esc(p.id)}')">
           <div class="node-top-row">
             <span class="avatar ${g}">${esc(getInitials(p.name))}</span>
             <span class="badge ${esc(cat)}">${esc(p.category)}</span>
           </div>
           <strong>${esc(p.name)}</strong>
           <div class="person-meta">${formatShortDate(p.date)}</div>
-          <button class="edit-icon" onclick="openModal('${esc(p.id)}')">✏️ Enlazar</button>
+          <button class="edit-icon" onclick="event.stopPropagation(); openModal('${esc(p.id)}')">✏️ Enlazar</button>
         </div>`;
       }).join("") +
       `</div></div>`;
@@ -1248,7 +1527,7 @@ function renderTree(expandDepth = currentTreeDepth) {
     unlinkedBox.innerHTML = "";
   }
 
-  requestAnimationFrame(centerTreeViewport);
+  if (!treeVerticalMode) requestAnimationFrame(centerTreeViewport);
 }
 
 function toggleBranch(btn) {
@@ -1260,9 +1539,7 @@ function toggleBranch(btn) {
   btn.textContent = collapsed ? `▼ ${count} hijo${count > 1 ? 's' : ''}` : `▲ Ocultar (${count})`;
 }
 
-function setTreeDepth(depth) {
-  renderTree(depth);
-}
+function setTreeDepth(depth) { renderTree(depth); }
 
 function changeZoom(delta) {
   treeZoom = Math.min(1.4, Math.max(0.45, +(treeZoom + delta).toFixed(2)));
@@ -1279,7 +1556,7 @@ function resetZoom() {
 
 function centerTreeViewport() {
   const vp = document.getElementById("treeViewport");
-  if (!vp) return;
+  if (!vp || treeVerticalMode) return;
   vp.scrollLeft = Math.max(0, (vp.scrollWidth - vp.clientWidth) / 2);
 }
 
@@ -1287,7 +1564,7 @@ function setupTreeDrag() {
   const vp = document.getElementById("treeViewport");
   let isDown = false, startX = 0, startY = 0, scrollL = 0, scrollT = 0;
   vp.addEventListener("mousedown", e => {
-    if (e.target.closest("button")) return;
+    if (treeVerticalMode || e.target.closest("button")) return;
     isDown = true; vp.classList.add("grabbing");
     startX = e.pageX - vp.offsetLeft; startY = e.pageY - vp.offsetTop;
     scrollL = vp.scrollLeft; scrollT = vp.scrollTop;
@@ -1301,25 +1578,21 @@ function setupTreeDrag() {
   });
 }
 
-// ================= ADMIN, CORREO Y GUARDADO =================
+// ================= ADMIN, CORREOS Y GUARDADO =================
 function toggleAdmin() {
   if (adminUnlocked) {
     adminUnlocked = false;
     document.body.classList.remove("is-admin");
-    document.getElementById("btnAdmin").textContent = "🔒 Modo Admin";
+    document.getElementById("btnAdmin").textContent = "🔒 Admin";
     document.getElementById("btnAdmin").classList.remove("unlocked");
-    document.getElementById("btnAdd").style.display = "none";
-    document.getElementById("btnSeed").style.display = "none";
     return;
   }
   const pass = prompt("Ingresa la clave de administrador:");
   if (pass === "dinosaurio") {
     adminUnlocked = true;
     document.body.classList.add("is-admin");
-    document.getElementById("btnAdmin").textContent = "🔓 Admin Activo";
+    document.getElementById("btnAdmin").textContent = "🔓 Salir Admin";
     document.getElementById("btnAdmin").classList.add("unlocked");
-    document.getElementById("btnAdd").style.display = "inline-flex";
-    document.getElementById("btnSeed").style.display = "inline-flex";
   } else if (pass !== null) {
     alert("Clave incorrecta.");
   }
@@ -1337,6 +1610,90 @@ async function subscribeEmail() {
     alert("¡Listo! Te avisaremos por correo cada vez que haya cumpleaños.");
   } catch (e) {
     alert("Error al guardar el correo. Revisa las reglas de Firestore.");
+  }
+}
+
+function detectGitHubRepo() {
+  try {
+    const saved = localStorage.getItem(GH_REPO_KEY);
+    if (saved) return saved;
+    const host = window.location.hostname;
+    if (host.endsWith(".github.io")) {
+      const owner = host.replace(".github.io", "");
+      const repo = window.location.pathname.split("/").filter(Boolean)[0] || "";
+      if (owner && repo) return `${owner}/${repo}`;
+    }
+  } catch {}
+  return "";
+}
+
+function openTestEmailModal() {
+  if (!adminUnlocked) return;
+  const repo = detectGitHubRepo();
+  document.getElementById("te_repo").value = repo;
+  document.getElementById("te_email").value = localStorage.getItem(GH_EMAIL_KEY) || "";
+  document.getElementById("te_token").value = localStorage.getItem(GH_TOKEN_KEY) || "";
+  document.getElementById("te_status").innerHTML = "";
+  const manualLink = document.getElementById("te_manualLink");
+  manualLink.href = repo ? `https://github.com/${repo}/actions/workflows/cumpleanos.yml` : "https://github.com";
+  document.getElementById("testEmailModal").classList.add("open");
+}
+
+function closeTestEmailModal() {
+  document.getElementById("testEmailModal").classList.remove("open");
+}
+
+async function triggerTestEmail() {
+  const email = document.getElementById("te_email").value.trim();
+  const repo = document.getElementById("te_repo").value.trim().replace(/^\/|\/$/g, "");
+  const token = document.getElementById("te_token").value.trim();
+  const statusEl = document.getElementById("te_status");
+
+  if (!email || !email.includes("@")) {
+    statusEl.innerHTML = `<span style="color:#be123c;">Ingresa un correo válido para recibir la prueba.</span>`;
+    return;
+  }
+  if (!repo || !repo.includes("/")) {
+    statusEl.innerHTML = `<span style="color:#be123c;">Escribe el repositorio como <strong>usuario/nombre-repo</strong>.</span>`;
+    return;
+  }
+  if (!token) {
+    statusEl.innerHTML = `<span style="color:#b45309;">Falta el Token de GitHub. También puedes usar el botón <strong>↗️ Abrir Actions</strong> para dispararlo directo en GitHub.</span>`;
+    return;
+  }
+
+  localStorage.setItem(GH_EMAIL_KEY, email);
+  localStorage.setItem(GH_REPO_KEY, repo);
+  localStorage.setItem(GH_TOKEN_KEY, token);
+
+  const btn = document.getElementById("btnSendTestEmail");
+  btn.disabled = true; btn.textContent = "Enviando...";
+  statusEl.innerHTML = `<span style="color:#0369a1;">⏳ Solicitando envío a GitHub Actions...</span>`;
+
+  try {
+    const res = await fetch(`https://api.github.com/repos/${repo}/actions/workflows/cumpleanos.yml/dispatches`, {
+      method: "POST",
+      headers: {
+        "Accept": "application/vnd.github+json",
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        ref: "main",
+        inputs: { test_email: email }
+      })
+    });
+
+    if (res.status === 204) {
+      statusEl.innerHTML = `<span style="color:#047857; font-weight:600;">✅ ¡Orden enviada! En 30 a 60 segundos debería llegar el correo de prueba a ${esc(email)}.</span>`;
+    } else {
+      const err = await res.json().catch(() => ({}));
+      statusEl.innerHTML = `<span style="color:#be123c;">❌ Error (${res.status}): ${esc(err.message || "Revisa el token, el nombre del repo y que cumpleanos.yml esté actualizado.")}</span>`;
+    }
+  } catch (e) {
+    statusEl.innerHTML = `<span style="color:#be123c;">❌ No se pudo conectar con GitHub.</span>`;
+  } finally {
+    btn.disabled = false; btn.textContent = "Enviar prueba";
   }
 }
 
@@ -1364,9 +1721,7 @@ function openModal(personId = null) {
   document.getElementById("personModal").classList.add("open");
 }
 
-function closeModal() {
-  document.getElementById("personModal").classList.remove("open");
-}
+function closeModal() { document.getElementById("personModal").classList.remove("open"); }
 
 async function saveForm() {
   const id = document.getElementById("f_id").value || "p_" + Date.now();
@@ -1382,10 +1737,7 @@ async function saveForm() {
   }
 
   const person = sanitizePerson({
-    id,
-    name,
-    date,
-    gender,
+    id, name, date, gender,
     category: document.getElementById("f_category").value,
     parentId: document.getElementById("f_parent").value,
     spouseId: document.getElementById("f_spouse").value
@@ -1401,17 +1753,11 @@ async function saveForm() {
     const toSync = [person];
     if (oldSpouseId && oldSpouseId !== person.spouseId) {
       const oldSp = PEOPLE.find(x => x.id === oldSpouseId);
-      if (oldSp && oldSp.spouseId === person.id) {
-        oldSp.spouseId = "";
-        toSync.push(oldSp);
-      }
+      if (oldSp && oldSp.spouseId === person.id) { oldSp.spouseId = ""; toSync.push(oldSp); }
     }
     if (person.spouseId) {
       const newSp = PEOPLE.find(x => x.id === person.spouseId);
-      if (newSp && newSp.spouseId !== person.id) {
-        newSp.spouseId = person.id;
-        toSync.push(newSp);
-      }
+      if (newSp && newSp.spouseId !== person.id) { newSp.spouseId = person.id; toSync.push(newSp); }
     }
 
     saveLocalCache();
@@ -1497,19 +1843,19 @@ async function syncInitialToFirebase() {
     saveLocalCache();
     renderAll();
     setStatus("🟢 En línea", "ok");
-    alert(`¡Listo! Se guardaron ${fullList.length} personas con sexo y enlaces en Firebase.`);
+    alert(`¡Listo! Se guardaron ${fullList.length} personas en Firebase.`);
   } catch (e) {
     console.error(e);
     alert("Error al sincronizar. Verifica las reglas de Firestore.");
   }
 }
 
-function switchTab(tab, btn) {
+function switchTab(tab) {
   document.querySelectorAll(".view-section").forEach(s => s.classList.remove("active"));
-  document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+  document.querySelectorAll(".tab-btn").forEach(b => b.classList.toggle("active", b.dataset.tab === tab));
   document.getElementById("view-" + tab).classList.add("active");
-  btn.classList.add("active");
-  if (tab === "tree") requestAnimationFrame(centerTreeViewport);
+  if (tab === "tree" && !treeVerticalMode) requestAnimationFrame(centerTreeViewport);
+  window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
 bootInstant();
