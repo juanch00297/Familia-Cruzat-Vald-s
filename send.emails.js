@@ -42,7 +42,7 @@ async function run() {
   console.log(`Personas en Firebase: ${people.length} | Suscriptores: ${emails.length} | Modo forzado: ${forceAll}`);
 
   if (emails.length === 0) {
-    console.error("⚠️ No hay correos suscritos en Firebase (usa el botón '🔔 Avisos correo' en la página primero).");
+    console.error("⚠️ No hay correos suscritos en Firebase (usa '🔔 Avisos correo' primero).");
     if (forceAll) process.exit(1);
     return;
   }
@@ -52,7 +52,6 @@ async function run() {
     return dt && dt.m === m && dt.d === d;
   });
 
-  // En el envío automático diario (8:00 AM), si hoy no hay cumpleaños no manda nada
   if (cumpleaneros.length === 0 && !forceAll) {
     console.log("Hoy no hay cumpleaños. No se envían correos.");
     return;
@@ -60,9 +59,12 @@ async function run() {
 
   const transporter = nodemailer.createTransport({
     service: "gmail",
+    connectionTimeout: 15000,
+    greetingTimeout: 15000,
+    socketTimeout: 20000,
     auth: {
       user: process.env.GMAIL_USER.trim(),
-      pass: process.env.GMAIL_APP_PASSWORD.replace(/\s+/g, "") // Limpia espacios automáticamente
+      pass: process.env.GMAIL_APP_PASSWORD.replace(/\s+/g, "")
     }
   });
 
@@ -71,7 +73,6 @@ async function run() {
   let htmlBody = "";
 
   if (cumpleaneros.length > 0) {
-    // Hay cumpleaños hoy
     const listaTexto = cumpleaneros
       .map(p => `• ${p.name} (cumple ${year - Number(p.date.split("-")[0])} años - ${p.category})`)
       .join("\n");
@@ -99,7 +100,6 @@ async function run() {
         <p style="font-size:13px;color:#475569;margin-top:14px;">¡No olvides mandar tu saludo!</p>
       </div>`;
   } else {
-    // Envío manual desde Modo Admin cuando hoy no hay cumpleaños: manda los próximos
     const todayStart = new Date(year, m - 1, d);
     const proximos = people
       .map(p => {
@@ -148,7 +148,9 @@ async function run() {
   console.log(`✅ Correo enviado correctamente a ${emails.length} suscriptores.`);
 }
 
-run().catch(err => {
-  console.error("❌ Error al enviar correos:", err.message || err);
-  process.exit(1);
-});
+run()
+  .then(() => process.exit(0))
+  .catch(err => {
+    console.error("❌ Error al enviar correos:", err.message || err);
+    process.exit(1);
+  });
