@@ -77,6 +77,7 @@
   }
   .btn:hover { background: #f8fafc; border-color: #94a3b8; }
   .btn:active { transform: scale(0.98); }
+  .btn-sm { padding: 6px 10px; font-size: 0.78rem; min-height: 32px; border-radius: 8px; }
   .btn-primary { background: var(--primary); color: #fff; border-color: var(--primary); }
   .btn-primary:hover { background: var(--primary-dark); border-color: var(--primary-dark); }
   .btn-whatsapp { background: #16a34a; color: #fff; border-color: #16a34a; }
@@ -131,13 +132,13 @@
 
   /* Próximos cumpleaños */
   #upcomingList {
-    display: flex; gap: 12px; overflow-x: auto; padding-bottom: 6px;
+    display: flex; gap: 10px; overflow-x: auto; padding-bottom: 6px;
     scroll-snap-type: x proximity; -webkit-overflow-scrolling: touch;
   }
   .upcomingCard {
-    min-width: 220px; background: #f8fafc; border: 1px solid var(--border);
-    border-radius: 13px; padding: 13px; flex-shrink: 0; scroll-snap-align: start;
-    display: flex; flex-direction: column; gap: 6px; font-size: 0.85rem;
+    min-width: 210px; background: #f8fafc; border: 1px solid var(--border);
+    border-radius: 13px; padding: 12px; flex-shrink: 0; scroll-snap-align: start;
+    display: flex; flex-direction: column; gap: 5px; font-size: 0.84rem;
     cursor: pointer; transition: transform 0.15s ease, border-color 0.15s;
   }
   .upcomingCard:hover { transform: translateY(-2px); border-color: #94a3b8; }
@@ -152,15 +153,15 @@
   }
   .upcomingCard.is-today .countdown-tag { background: #f59e0b; color: #fff; }
 
-  /* Buscador + filtros rápidos */
+  /* Buscador */
   .calendar-controls {
     display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
     justify-content: space-between; margin-bottom: 12px;
   }
-  .search-wrap { position: relative; flex: 1; min-width: 240px; max-width: 440px; }
+  .search-wrap { position: relative; flex: 1; min-width: 220px; max-width: 440px; }
   .search-bar {
-    width: 100%; padding: 11px 36px 11px 14px; border: 1px solid #cbd5e1; border-radius: 12px;
-    font-size: 0.94rem; background: #fff; outline: none; transition: border-color 0.15s;
+    width: 100%; padding: 10px 36px 10px 14px; border: 1px solid #cbd5e1; border-radius: 12px;
+    font-size: 0.92rem; background: #fff; outline: none; transition: border-color 0.15s;
   }
   .search-bar:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(15,98,254,0.12); }
   .search-clear {
@@ -189,45 +190,102 @@
   }
   #monthNav button.active .m-count { background: rgba(255,255,255,0.22); opacity: 1; }
 
-  /* Grilla Calendario */
+  /* Cabecera del mes dentro de la tarjeta */
+  .month-header-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .month-nav-arrows { display: flex; align-items: center; gap: 6px; }
+  .month-title {
+    margin: 0;
+    font-size: 1.2rem;
+    color: var(--primary);
+    font-weight: 800;
+    letter-spacing: -0.01em;
+  }
+  .month-view-toggle { display: none; }
+
+  /* Grilla Calendario Mensual (7 columnas siempre por defecto) */
   .weekdays-header {
-    display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px;
+    display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px;
     margin-bottom: 8px; text-align: center; font-size: 0.78rem; font-weight: 700;
     color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em;
   }
-  .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; }
+  .wd-short { display: none; }
+  .calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 8px;
+  }
   .day {
     min-height: 92px; padding: 8px; border-radius: 11px;
     background: #f8fafc; border: 1px solid var(--border);
-    display: flex; flex-direction: column; gap: 5px; font-size: 0.82rem;
+    display: flex; flex-direction: column; gap: 4px; font-size: 0.82rem;
+    min-width: 0;
+    transition: border-color 0.15s, background 0.15s;
   }
-  .day.inactive { background: #f1f5f9; border-color: transparent; opacity: 0.45; }
+  .day.has-events { cursor: pointer; background: #ffffff; }
+  .day.has-events:hover { border-color: #93c5fd; }
+  .day.inactive { background: #f1f5f9; border-color: transparent; opacity: 0.4; }
   .day.today { background: #fffbeb; border: 2px solid #f59e0b; }
-  .day-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px; }
-  .day .num { font-weight: 800; color: #334155; }
+  .day-head { display: flex; justify-content: space-between; align-items: center; gap: 2px; margin-bottom: 1px; }
+  .day .num { font-weight: 800; color: #334155; font-size: 0.84rem; line-height: 1.1; }
   .day.today .num { color: #b45309; }
-  .day .weekday-mobile { display: none; font-size: 0.78rem; color: var(--muted); text-transform: capitalize; font-weight: 600; }
-  .empty-month-msg {
-    display: none; text-align: center; padding: 20px; color: var(--muted); font-size: 0.9rem;
+  .day-count-dot {
+    display: none;
+    font-size: 0.56rem;
+    font-weight: 800;
+    background: #e2e8f0;
+    color: #334155;
+    border-radius: 999px;
+    padding: 0 4px;
+    line-height: 1.3;
   }
+  .day .weekday-list { display: none; font-size: 0.78rem; color: var(--muted); text-transform: capitalize; font-weight: 600; }
 
-  /* Badges categorías */
+  /* Etiquetas de cumpleañeros */
   .badge {
-    display: inline-block; padding: 4px 9px; border-radius: 8px;
+    display: inline-block; padding: 4px 8px; border-radius: 8px;
     font-size: 0.75rem; color: #fff; font-weight: 600; cursor: pointer;
     line-height: 1.25; transition: transform 0.12s, opacity 0.12s;
     word-break: break-word;
   }
   .badge:hover { opacity: 0.9; transform: scale(1.02); }
+  .badge .name-short { display: none; }
   .Abuelos { background: #eab308; color: #1e293b; }
   .Tio { background: #2563eb; }
   .Nieto { background: #16a34a; }
   .Bisnieto { background: #ec4899; }
   .Casado { background: #7c3aed; }
 
+  .cal-mobile-hint {
+    display: none;
+    margin: 10px 0 0;
+    text-align: center;
+    font-size: 0.73rem;
+    color: var(--muted);
+  }
+
+  /* Modo Lista opcional en calendario */
+  .cal-list-mode .weekdays-header { display: none; }
+  .cal-list-mode .calendar-grid { grid-template-columns: 1fr; gap: 8px; }
+  .cal-list-mode .day.inactive,
+  .cal-list-mode .day.no-events:not(.today) { display: none; }
+  .cal-list-mode .day { min-height: auto; padding: 11px 12px; }
+  .cal-list-mode .day .weekday-list { display: inline; }
+  .cal-list-mode .day .badge { font-size: 0.84rem; padding: 7px 10px; white-space: normal; }
+  .cal-list-mode .badge .name-full { display: inline; }
+  .cal-list-mode .badge .name-short { display: none; }
+  .cal-list-mode .day-count-dot { display: none !important; }
+  .empty-month-msg { display: none; text-align: center; padding: 18px; color: var(--muted); font-size: 0.88rem; }
+  .cal-list-mode .empty-month-msg.show { display: block; }
+
   .legend {
     display: flex; flex-wrap: wrap; gap: 10px; font-size: 0.82rem; color: var(--muted);
-    margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border);
+    margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border);
   }
   .legend-item { display: flex; align-items: center; gap: 5px; }
 
@@ -303,40 +361,21 @@
     -webkit-overflow-scrolling: touch;
   }
   .tree-viewport.grabbing { cursor: grabbing; }
-
-  .tree-stage {
-    width: max-content;
-    margin: 0 auto;
-    transform-origin: top left;
-    transition: transform 0.15s ease;
-  }
+  .tree-stage { width: max-content; margin: 0 auto; transform-origin: top left; transition: transform 0.15s ease; }
 
   /* Modo Acordeón Vertical (ideal para celular) */
   .tree-viewport.vertical-mode {
-    padding: 16px 12px 28px;
-    max-height: none;
-    min-height: auto;
-    cursor: default;
-    background-image: none;
+    padding: 16px 12px 28px; max-height: none; min-height: auto; cursor: default; background-image: none;
   }
-  .tree-viewport.vertical-mode .tree-stage {
-    width: 100%;
-    transform: none !important;
-  }
+  .tree-viewport.vertical-mode .tree-stage { width: 100%; transform: none !important; }
   .tree-viewport.vertical-mode .tree .level-root { display: block; }
   .tree-viewport.vertical-mode .tree .level-root > li { align-items: stretch; }
   .tree-viewport.vertical-mode .tree .branch-horizontal {
-    flex-direction: column;
-    align-items: stretch;
-    padding: 10px 0 2px 14px;
+    flex-direction: column; align-items: stretch; padding: 10px 0 2px 14px;
   }
-  .tree-viewport.vertical-mode .tree .branch-horizontal::before {
-    left: 14px; height: 10px;
-  }
+  .tree-viewport.vertical-mode .tree .branch-horizontal::before { left: 14px; height: 10px; }
   .tree-viewport.vertical-mode .tree .branch-horizontal > li {
-    width: 100%;
-    padding: 6px 0 6px 14px;
-    align-items: stretch;
+    width: 100%; padding: 6px 0 6px 14px; align-items: stretch;
   }
   .tree-viewport.vertical-mode .tree .branch-horizontal > li::before {
     top: 0; left: 0; right: auto; width: 0; height: 100%;
@@ -401,7 +440,6 @@
     content: ''; position: absolute; top: 28px; left: 0;
     width: 14px; border-top: 2px solid #94a3b8; opacity: 0.6;
   }
-
   .tree ul.collapsed { display: none; }
 
   /* Tarjetas nodos */
@@ -483,7 +521,7 @@
   .unlinked-list { display: flex; flex-wrap: wrap; gap: 10px; }
   .unlinked-list .person-node { width: 175px; }
 
-  /* Modales y Bottom Sheet en móvil */
+  /* Modales y Bottom Sheet */
   .modal-backdrop {
     display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.55);
     backdrop-filter: blur(2px); justify-content: center; align-items: center;
@@ -506,7 +544,7 @@
   .modal-actions { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-top: 18px; flex-wrap: wrap; }
   .modal-actions-right { display: flex; gap: 8px; margin-left: auto; }
 
-  /* Ficha de detalle de persona */
+  /* Ficha de persona y lista de día */
   .detail-header { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
   .detail-avatar {
     width: 48px; height: 48px; border-radius: 50%; font-size: 1.05rem; font-weight: 800;
@@ -515,96 +553,136 @@
   .detail-avatar.M { background: var(--male-bg); color: var(--male); border: 2px solid #93c5fd; }
   .detail-avatar.F { background: var(--female-bg); color: var(--female); border: 2px solid #f9a8d4; }
   .detail-avatar.U { background: #e2e8f0; color: #475569; }
-  .detail-grid {
-    display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px;
-  }
-  .detail-box {
-    background: #f8fafc; border: 1px solid var(--border); border-radius: 10px; padding: 9px 11px;
-  }
+  .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+  .detail-box { background: #f8fafc; border: 1px solid var(--border); border-radius: 10px; padding: 9px 11px; }
   .detail-box small { display: block; font-size: 0.71rem; color: var(--muted); font-weight: 600; text-transform: uppercase; }
   .detail-box strong { font-size: 0.88rem; color: var(--text); }
   .detail-relations { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; font-size: 0.86rem; }
   .detail-actions { display: flex; gap: 8px; flex-wrap: wrap; }
   .detail-actions .btn { flex: 1; min-width: 140px; }
 
+  .day-modal-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
+  .day-modal-item {
+    display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    padding: 10px 12px; border-radius: 12px; background: #f8fafc;
+    border: 1px solid var(--border); cursor: pointer;
+  }
+  .day-modal-item:hover { border-color: #93c5fd; background: #eff6ff; }
+  .day-modal-left { display: flex; align-items: center; gap: 10px; min-width: 0; }
+
   /* Navegación fija inferior solo en celular */
   .mobile-bottom-nav { display: none; }
 
-  /* ================= RESPONSIVE CELULAR ================= */
+  /* ================= RESPONSIVE CELULAR (CALENDARIO MENSUAL 7 COLUMNAS) ================= */
   @media (max-width: 760px) {
-    body { padding: 10px 10px 88px; }
-    header { padding: 13px 14px; margin-bottom: 12px; border-radius: 14px; }
-    .brand h1 { font-size: 1.18rem; }
+    body { padding: 8px 8px 86px; }
+    header { padding: 12px 13px; margin-bottom: 10px; border-radius: 14px; gap: 10px; }
+    .brand h1 { font-size: 1.12rem; }
+    .brand-meta { font-size: 0.76rem; gap: 6px; }
     .top-actions { width: 100%; }
-    .top-actions .btn { flex: 1; font-size: 0.82rem; padding: 9px 10px; }
+    .top-actions .btn { flex: 1; font-size: 0.8rem; padding: 8px 9px; min-height: 36px; }
 
-    .tabs { display: none; } /* Reemplazado por barra inferior fija */
+    .tabs { display: none; }
     .mobile-bottom-nav {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 6px;
-      position: fixed;
-      bottom: 0; left: 0; right: 0;
-      z-index: 150;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 6px;
+      position: fixed; bottom: 0; left: 0; right: 0; z-index: 150;
       background: rgba(255, 255, 255, 0.96);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
       border-top: 1px solid #cbd5e1;
       padding: 8px 12px calc(8px + env(safe-area-inset-bottom));
       box-shadow: 0 -4px 16px rgba(15, 23, 42, 0.08);
     }
-    .mobile-bottom-nav .tab-btn {
-      padding: 10px 12px; font-size: 0.9rem; border-radius: 11px;
-    }
-    .mobile-bottom-nav .tab-btn.active {
-      background: #eff6ff; color: var(--primary); box-shadow: none; border: 1px solid #bfdbfe;
-    }
+    .mobile-bottom-nav .tab-btn { padding: 10px 12px; font-size: 0.88rem; border-radius: 11px; }
+    .mobile-bottom-nav .tab-btn.active { background: #eff6ff; color: var(--primary); box-shadow: none; border: 1px solid #bfdbfe; }
 
-    .card { padding: 14px; border-radius: 14px; margin-bottom: 12px; }
+    .card { padding: 12px 10px; border-radius: 14px; margin-bottom: 10px; }
+    .section-title { font-size: 0.94rem; margin-bottom: 8px; }
+    .upcomingCard { min-width: 195px; padding: 10px; font-size: 0.8rem; }
 
     /* Meses en una fila deslizable */
     #monthNav {
-      flex-wrap: nowrap;
-      overflow-x: auto;
-      padding-bottom: 6px;
-      margin-bottom: 10px;
-      -webkit-overflow-scrolling: touch;
-      scrollbar-width: none;
+      flex-wrap: nowrap; overflow-x: auto; padding-bottom: 5px; margin-bottom: 10px;
+      -webkit-overflow-scrolling: touch; scrollbar-width: none;
     }
     #monthNav::-webkit-scrollbar { display: none; }
-    #monthNav button { padding: 9px 14px; font-size: 0.86rem; }
+    #monthNav button { padding: 7px 11px; font-size: 0.8rem; }
 
-    /* Agenda móvil en el calendario */
-    .weekdays-header { display: none; }
-    .calendar-grid { grid-template-columns: 1fr; gap: 8px; }
-    .day.inactive { display: none; }
-    .day.no-events:not(.today) { display: none; }
-    .day {
-      min-height: auto; padding: 12px; border-radius: 12px;
-      background: #fff; border: 1px solid var(--border);
+    /* Cabecera compacta del calendario */
+    .month-title { font-size: 1.04rem; }
+    .month-view-toggle { display: inline-flex; }
+
+    /* GRILLA MENSUAL COMPLETA DE 7 COLUMNAS EN TELÉFONO */
+    .weekdays-header { gap: 3px; margin-bottom: 5px; font-size: 0.68rem; }
+    .wd-long { display: none; }
+    .wd-short { display: inline; }
+
+    .calendar-grid {
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: 3px;
     }
-    .day .weekday-mobile { display: inline; }
-    .day .badge { padding: 7px 10px; font-size: 0.84rem; width: 100%; }
-    .empty-month-msg.show { display: block; }
+    .day {
+      min-height: 64px;
+      padding: 4px 2px 3px;
+      border-radius: 7px;
+      gap: 2px;
+      background: #f8fafc;
+    }
+    .day.has-events {
+      background: #ffffff;
+      border-color: #cbd5e1;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+    }
+    .day.today { border-width: 1.5px; }
+    .day-head { padding: 0 2px; margin-bottom: 1px; }
+    .day .num { font-size: 0.69rem; font-weight: 800; }
+    .day.has-many .day-count-dot { display: inline-block; }
+
+    /* Badges finos en una sola línea legible para 7 columnas */
+    .day .badge {
+      display: block;
+      width: 100%;
+      padding: 2px 3px;
+      border-radius: 4px;
+      font-size: 0.59rem;
+      font-weight: 700;
+      line-height: 1.15;
+      letter-spacing: -0.015em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      text-align: left;
+    }
+    .day .badge .name-full { display: none; }
+    .day .badge .name-short { display: inline; }
+
+    .cal-mobile-hint { display: block; }
+    .legend { gap: 7px; font-size: 0.72rem; margin-top: 10px; padding-top: 10px; }
+    .legend .badge { font-size: 0.66rem; padding: 2px 6px; }
 
     /* Árbol y estadísticas en móvil */
-    .tree-stats-card {
-      position: static; width: 100%; margin-bottom: 12px; box-shadow: none;
-    }
+    .tree-stats-card { position: static; width: 100%; margin-bottom: 12px; box-shadow: none; }
     .tree-toolbar { flex-direction: column; align-items: stretch; }
     .tree-controls { justify-content: center; }
-    .tree-controls .btn { flex: 1; font-size: 0.8rem; padding: 8px 9px; }
+    .tree-controls .btn { flex: 1; font-size: 0.78rem; padding: 7px 8px; }
     .zoom-controls-wrap.hide-in-vertical { display: none; }
     .unlinked-list .person-node { width: 100%; }
 
-    /* Modales como Bottom Sheet en celular */
+    /* Modales como Bottom Sheet */
     .modal-backdrop { align-items: flex-end; padding: 0; }
     .modal {
       border-radius: 20px 20px 0 0;
-      padding: 20px 18px calc(22px + env(safe-area-inset-bottom));
+      padding: 20px 16px calc(22px + env(safe-area-inset-bottom));
       max-width: 100%;
     }
     .form-row { grid-template-columns: 1fr; }
+  }
+
+  /* Pantallas muy angostas (ej. 360px o menos) */
+  @media (max-width: 380px) {
+    .calendar-grid { gap: 2px; }
+    .day { min-height: 58px; padding: 3px 1.5px; }
+    .day .num { font-size: 0.64rem; }
+    .day .badge { font-size: 0.55rem; padding: 1.5px 2px; }
   }
 </style>
 </head>
@@ -618,7 +696,7 @@
       <span>•</span>
       <span id="statsLabel">Cargando...</span>
       <span id="syncStatus" class="sync-pill">⚡ Cargando...</span>
-      <span class="ver-tag">v6</span>
+      <span class="ver-tag">v7</span>
     </div>
   </div>
   <div class="top-actions">
@@ -660,14 +738,15 @@
 
   <section id="monthNav"></section>
 
-  <section class="card">
+  <section id="calendarCard" class="card">
     <div id="monthsContainer"></div>
+    <p class="cal-mobile-hint">👆 Toca cualquier día con cumpleaños para ver el detalle completo</p>
     <div class="legend">
-      <div class="legend-item"><span class="badge Abuelos">Abuelos</span> Abuelos</div>
-      <div class="legend-item"><span class="badge Tio">Tio</span> Tío / Tía</div>
-      <div class="legend-item"><span class="badge Nieto">Nieto</span> Nieto / Nieta</div>
-      <div class="legend-item"><span class="badge Casado">Casado</span> Casado/a</div>
-      <div class="legend-item"><span class="badge Bisnieto">Bisnieto</span> Bisnieto/a</div>
+      <div class="legend-item"><span class="badge Abuelos">Abuelos</span></div>
+      <div class="legend-item"><span class="badge Tio">Tío/a</span></div>
+      <div class="legend-item"><span class="badge Nieto">Nieto/a</span></div>
+      <div class="legend-item"><span class="badge Casado">Casado/a</span></div>
+      <div class="legend-item"><span class="badge Bisnieto">Bisnieto/a</span></div>
     </div>
   </section>
 </div>
@@ -720,7 +799,7 @@
   <button class="tab-btn" data-tab="tree" onclick="switchTab('tree')">🌳 Árbol Familiar</button>
 </nav>
 
-<!-- MODAL FICHA DE PERSONA (PARA TODA LA FAMILIA) -->
+<!-- MODAL FICHA DE PERSONA / LISTA DE DÍA -->
 <div id="detailModal" class="modal-backdrop" onclick="if(event.target===this) closeDetailModal()">
   <div class="modal">
     <div id="detailContent"></div>
@@ -1014,7 +1093,7 @@ const INITIAL_BIRTHDAYS = [
 
 const INITIAL_GENDER_BY_ID = Object.fromEntries(INITIAL_BIRTHDAYS.map(p => [p.id, p.gender]));
 
-const CACHE_KEY = "cruzat_people_cache_v6";
+const CACHE_KEY = "cruzat_people_cache_v7";
 const GH_TOKEN_KEY = "cruzat_gh_admin_token";
 const GH_REPO_KEY = "cruzat_gh_admin_repo";
 const GH_EMAIL_KEY = "cruzat_gh_test_email";
@@ -1025,6 +1104,7 @@ const shortMonths = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct'
 let PEOPLE = [];
 let adminUnlocked = false;
 let currentMonth = new Date().getMonth();
+let calendarListMode = false; // Siempre parte en calendario mensual completo de 7 columnas
 let currentTreeDepth = 1;
 let treeZoom = 1;
 let treeVerticalMode = window.innerWidth <= 760;
@@ -1074,6 +1154,21 @@ function getInitials(name) {
   return (words[0][0] + words[words.length - 1][0]).toUpperCase();
 }
 
+// Nombre compacto para que quepa limpio en las 7 columnas del celular
+function getShortCalendarName(name) {
+  const words = String(name || "").trim().split(/\s+/).filter(Boolean);
+  if (!words.length) return "";
+  const first = words[0];
+  const norm = first.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  if (words.length >= 2 && (norm === "maria" || norm === "juan" || norm === "jose")) {
+    if (norm === "maria" && words[1].toLowerCase() === "de" && words[3]) {
+      return "M. " + words[3].slice(0, 4);
+    }
+    return norm === "maria" ? `M. ${words[1]}` : `${first} ${words[1][0]}.`;
+  }
+  return first;
+}
+
 function sanitizePerson(p, idx = 0) {
   const id = String(p.id || "p_" + (idx + 1));
   const explicitGender = (p.gender === "M" || p.gender === "F")
@@ -1113,7 +1208,6 @@ function bootInstant() {
     PEOPLE = INITIAL_BIRTHDAYS.map(sanitizePerson);
   }
 
-  // En celular, iniciar cuadro de estadísticas minimizado para ahorrar espacio
   if (window.innerWidth <= 760) {
     document.getElementById("treeStatsCard").classList.add("minimized");
     document.getElementById("statsToggleBtn").textContent = "+";
@@ -1234,9 +1328,15 @@ function renderNav() {
 }
 
 function selectMonth(idx) {
-  currentMonth = idx;
+  currentMonth = (idx + 12) % 12;
   renderNav();
-  renderMonth(idx);
+  renderMonth(currentMonth);
+}
+
+function toggleCalendarListMode() {
+  calendarListMode = !calendarListMode;
+  document.getElementById("calendarCard").classList.toggle("cal-list-mode", calendarListMode);
+  renderMonth(currentMonth);
 }
 
 function renderMonth(monthIndex) {
@@ -1257,8 +1357,23 @@ function renderMonth(monthIndex) {
     }
   });
 
-  let html = `<h3 class="section-title" style="justify-content:center; font-size:1.2rem; color:var(--primary);">${monthNames[monthIndex]} ${year}</h3>`;
-  html += `<div class="weekdays-header"><div>Lun</div><div>Mar</div><div>Mié</div><div>Jue</div><div>Vie</div><div>Sáb</div><div>Dom</div></div>`;
+  const weekdays = [
+    ["Lun","L"], ["Mar","M"], ["Mié","M"], ["Jue","J"], ["Vie","V"], ["Sáb","S"], ["Dom","D"]
+  ];
+
+  let html = `<div class="month-header-bar">
+    <div class="month-nav-arrows">
+      <button class="btn btn-sm" onclick="selectMonth(${monthIndex - 1})" aria-label="Mes anterior">◀</button>
+      <h3 class="month-title">${monthNames[monthIndex]} ${year}</h3>
+      <button class="btn btn-sm" onclick="selectMonth(${monthIndex + 1})" aria-label="Mes siguiente">▶</button>
+    </div>
+    <button class="btn btn-sm month-view-toggle" onclick="toggleCalendarListMode()">${calendarListMode ? "🗓️ Mes" : "📋 Lista"}</button>
+  </div>`;
+
+  html += `<div class="weekdays-header">` +
+    weekdays.map(([l, s]) => `<div><span class="wd-long">${l}</span><span class="wd-short">${s}</span></div>`).join("") +
+    `</div>`;
+
   html += `<div class="calendar-grid">`;
 
   for (let i = 0; i < firstDay; i++) {
@@ -1269,18 +1384,77 @@ function renderMonth(monthIndex) {
     const isToday = d === today.getDate() && monthIndex === today.getMonth();
     const list = byDay[d] || [];
     const wd = new Date(year, monthIndex, d).toLocaleDateString("es-CL", { weekday: "long" });
-    const cls = `day ${isToday ? 'today' : ''} ${list.length === 0 ? 'no-events' : ''}`;
+    const cls = `day ${isToday ? 'today' : ''} ${list.length > 0 ? 'has-events' : 'no-events'} ${list.length >= 2 ? 'has-many' : ''}`;
+    const dayClickAttr = list.length > 0 ? `onclick="onDayClick(${monthIndex}, ${d})"` : "";
 
-    html += `<div class="${cls}"><div class="day-head"><span class="num">${d} ${isToday ? '• Hoy' : ''}</span><span class="weekday-mobile">${wd}</span></div>`;
+    html += `<div class="${cls}" ${dayClickAttr}>
+      <div class="day-head">
+        <span class="num">${d}</span>
+        ${list.length >= 2 ? `<span class="day-count-dot">${list.length}</span>` : ""}
+        <span class="weekday-list">${wd}</span>
+      </div>`;
+
     list.forEach(b => {
       const cat = b.category.replace(/\s+/g, "");
-      html += `<div class="badge ${esc(cat)}" onclick="onPersonClick('${esc(b.id)}')">${esc(b.name)} (${ageForYear(b.date, year)})</div>`;
+      const fullLabel = `${b.name} (${ageForYear(b.date, year)})`;
+      const shortLabel = getShortCalendarName(b.name);
+      html += `<div class="badge ${esc(cat)}" onclick="onCalendarBadgeClick(event, '${esc(b.id)}', ${monthIndex}, ${d})" title="${esc(fullLabel)}">
+        <span class="name-full">${esc(fullLabel)}</span>
+        <span class="name-short">${esc(shortLabel)}</span>
+      </div>`;
     });
     html += `</div>`;
   }
   html += `</div>`;
   html += `<div class="empty-month-msg ${totalInMonth === 0 ? 'show' : ''}">No hay cumpleaños registrados en ${monthNames[monthIndex]}.</div>`;
   container.innerHTML = html;
+}
+
+// Al tocar un badge dentro del calendario: en celular con varios cumpleaños abre el día para facilitar el toque
+function onCalendarBadgeClick(event, personId, monthIndex, day) {
+  event.stopPropagation();
+  if (window.innerWidth <= 760 && !calendarListMode) {
+    onDayClick(monthIndex, day);
+    return;
+  }
+  onPersonClick(personId);
+}
+
+function onDayClick(monthIndex, day) {
+  const year = new Date().getFullYear();
+  const list = PEOPLE.filter(p => {
+    const parts = parseDateParts(p.date);
+    return parts && parts.m === monthIndex && parts.d === day;
+  });
+  if (!list.length) return;
+  if (list.length === 1) {
+    onPersonClick(list[0].id);
+    return;
+  }
+
+  document.getElementById("detailContent").innerHTML = `
+    <h3 style="margin:0 0 12px;">🎂 ${day} de ${monthNames[monthIndex]} (${list.length} cumpleaños)</h3>
+    <div class="day-modal-list">
+      ${list.map(p => {
+        const g = p.gender || "U";
+        const cat = p.category.replace(/\s+/g, "");
+        return `<div class="day-modal-item" onclick="onPersonClick('${esc(p.id)}')">
+          <div class="day-modal-left">
+            <span class="avatar ${g}">${esc(getInitials(p.name))}</span>
+            <div>
+              <strong style="display:block; font-size:0.9rem;">${esc(p.name)}</strong>
+              <small style="color:var(--muted);">Cumple ${ageForYear(p.date, year)} años</small>
+            </div>
+          </div>
+          <span class="badge ${esc(cat)}">${esc(p.category)}</span>
+        </div>`;
+      }).join("")}
+    </div>
+    <div style="display:flex; justify-content:flex-end;">
+      <button class="btn" onclick="closeDetailModal()">Cerrar</button>
+    </div>
+  `;
+  document.getElementById("detailModal").classList.add("open");
 }
 
 function renderUpcoming() {
@@ -1300,7 +1474,7 @@ function renderUpcoming() {
   }
 
   if (!upcoming.length) {
-    listEl.innerHTML = `<div style="color:var(--muted); font-size:0.9rem;">No hay cumpleaños en los próximos 14 días.</div>`;
+    listEl.innerHTML = `<div style="color:var(--muted); font-size:0.88rem;">No hay cumpleaños en los próximos 14 días.</div>`;
     return;
   }
 
@@ -1313,7 +1487,7 @@ function renderUpcoming() {
         <span class="countdown-tag">${label}</span>
         <span class="badge ${esc(cat)}">${esc(person.category)}</span>
       </div>
-      <strong style="font-size:0.94rem;">${esc(person.name)}</strong>
+      <strong style="font-size:0.9rem;">${esc(person.name)}</strong>
       <div style="color:var(--muted);">${dateTxt} • Cumple <strong>${turningAge}</strong></div>
     </div>`;
   }).join("");
@@ -1343,9 +1517,9 @@ function clearSearch() {
   renderSearch();
 }
 
-// --- FICHA DE PERSONA (TOCAR NOMBRE EN MODO NORMAL) ---
+// --- FICHA DE PERSONA ---
 function onPersonClick(id) {
-  if (adminUnlocked) { openModal(id); return; }
+  if (adminUnlocked) { closeDetailModal(); openModal(id); return; }
   openDetailModal(id);
 }
 
@@ -1394,9 +1568,7 @@ function openDetailModal(id) {
   document.getElementById("detailModal").classList.add("open");
 }
 
-function closeDetailModal() {
-  document.getElementById("detailModal").classList.remove("open");
-}
+function closeDetailModal() { document.getElementById("detailModal").classList.remove("open"); }
 
 function locateInTree(id) {
   closeDetailModal();
@@ -1639,9 +1811,7 @@ function openTestEmailModal() {
   document.getElementById("testEmailModal").classList.add("open");
 }
 
-function closeTestEmailModal() {
-  document.getElementById("testEmailModal").classList.remove("open");
-}
+function closeTestEmailModal() { document.getElementById("testEmailModal").classList.remove("open"); }
 
 async function triggerTestEmail() {
   const email = document.getElementById("te_email").value.trim();
@@ -1678,10 +1848,7 @@ async function triggerTestEmail() {
         "Authorization": `Bearer ${token}`,
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({
-        ref: "main",
-        inputs: { test_email: email }
-      })
+      body: JSON.stringify({ ref: "main", inputs: { test_email: email } })
     });
 
     if (res.status === 204) {
