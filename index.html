@@ -54,15 +54,51 @@
   .legend { margin-top:20px; display:flex; flex-wrap:wrap; gap:12px; font-size:0.9rem; }
   .legend-item { display:flex; align-items:center; gap:6px; }
 
-  .tree-container { background:#fff; border-radius:12px; padding:20px; box-shadow:0 4px 12px rgba(0,0,0,0.08); overflow-x:auto; }
-  .tree ul { padding-top:16px; position:relative; list-style:none; padding-left:24px; border-left:2px solid #d0d7de; margin:6px 0 6px 12px; }
-  .tree > ul { border-left:none; padding-left:0; margin-left:0; }
-  .tree li { margin:10px 0; position:relative; }
-  .person-node { display:inline-flex; align-items:center; gap:8px; padding:8px 12px; border-radius:10px; background:#f8fafc; border:1px solid #dce3ea; box-shadow:0 1px 3px rgba(0,0,0,0.05); flex-wrap:wrap; }
-  .person-node .spouse-tag { font-size:0.82rem; color:#6b21a8; background:#f3e8ff; padding:2px 8px; border-radius:8px; }
-  .edit-icon { cursor:pointer; font-size:0.85rem; padding:2px 6px; border-radius:6px; background:#eef6ff; border:1px solid #b6d4fe; display:none; }
+  /* Árbol Genealógico de arriba hacia abajo */
+  .tree-container { background:#fff; border-radius:12px; padding:20px; box-shadow:0 4px 12px rgba(0,0,0,0.08); overflow-x:auto; text-align:center; }
+  .tree-controls { display:flex; justify-content:center; gap:8px; margin-bottom:16px; flex-wrap:wrap; }
+  .tree { display:inline-block; padding:10px 20px 30px; min-width:100%; }
+  .tree ul { padding-top:24px; position:relative; display:flex; justify-content:center; margin:0; padding-left:0; list-style:none; }
+  .tree > ul { padding-top:0; }
+  .tree li { display:flex; flex-direction:column; align-items:center; position:relative; padding:24px 8px 0 8px; }
+  .tree > ul > li { padding-top:0; }
+
+  /* Líneas conectoras del organigrama */
+  .tree li::before, .tree li::after { content:''; position:absolute; top:0; right:50%; border-top:2px solid #cbd5e1; width:50%; height:24px; }
+  .tree li::after { right:auto; left:50%; border-left:2px solid #cbd5e1; }
+  .tree li:only-child::after, .tree li:only-child::before { display:none; }
+  .tree li:only-child { padding-top:0; }
+  .tree li:first-child::before, .tree li:last-child::after { border:0 none; }
+  .tree li:last-child::before { border-right:2px solid #cbd5e1; border-radius:0 6px 0 0; }
+  .tree li:first-child::after { border-radius:6px 0 0 0; }
+  .tree ul ul::before { content:''; position:absolute; top:0; left:50%; border-left:2px solid #cbd5e1; width:0; height:24px; }
+
+  /* Tarjeta de cada persona/pareja */
+  .person-node {
+    display:inline-flex; flex-direction:column; align-items:center; gap:4px;
+    padding:10px 12px; border-radius:12px; background:#f8fafc;
+    border:1px solid #cbd5e1; box-shadow:0 2px 5px rgba(0,0,0,0.06);
+    min-width:150px; max-width:210px; text-align:center; position:relative; z-index:2;
+  }
+  .person-node.abuelos-node { background:#fffbeb; border:2px solid #f59e0b; min-width:220px; }
+  .person-node strong { font-size:0.88rem; line-height:1.2; }
+  .person-node .spouse-tag { font-size:0.78rem; color:#6b21a8; background:#f3e8ff; padding:3px 8px; border-radius:8px; margin-top:2px; width:100%; box-sizing:border-box; }
+  .branch-toggle {
+    margin-top:6px; background:#eef6ff; border:1px solid #93c5fd; color:#005fa3;
+    border-radius:12px; padding:2px 10px; font-size:0.75rem; font-weight:600; cursor:pointer;
+  }
+  .branch-toggle:hover { background:#dbeafe; }
+  .tree ul.collapsed { display:none; }
+
+  .edit-icon { cursor:pointer; font-size:0.75rem; padding:2px 6px; border-radius:6px; background:#fff; border:1px solid #b6d4fe; display:none; margin-top:2px; }
   body.is-admin .edit-icon { display:inline-block; }
 
+  /* Sección de personas aún sin enlazar */
+  .unlinked-box { margin-top:24px; padding:16px; background:#f8fafc; border:1px dashed #cbd5e1; border-radius:12px; text-align:left; }
+  .unlinked-box h4 { margin:0 0 10px; color:#555; font-size:0.95rem; }
+  .unlinked-list { display:flex; flex-wrap:wrap; gap:8px; }
+
+  /* Modal */
   .modal-backdrop { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); justify-content:center; align-items:center; z-index:100; padding:16px; }
   .modal-backdrop.open { display:flex; }
   .modal { background:#fff; border-radius:12px; padding:20px; width:100%; max-width:440px; box-shadow:0 10px 25px rgba(0,0,0,0.2); }
@@ -120,10 +156,15 @@
 <!-- VISTA ÁRBOL GENEALÓGICO -->
 <div id="view-tree" class="view-section">
   <div class="tree-container">
-    <p style="margin-top:0; color:#555; font-size:0.9rem;">
-      Para armar o ajustar ramas, activa el <strong>Modo Admin</strong> y edita cada persona para asignarle su <strong>Padre/Madre</strong> y su <strong>Pareja</strong>.
+    <div class="tree-controls">
+      <button class="btn" onclick="setTreeDepth(1)">🌳 Solo Abuelos y Tíos</button>
+      <button class="btn" onclick="setTreeDepth(99)">📂 Expandir todo el árbol</button>
+    </div>
+    <p style="margin:0 0 12px; color:#666; font-size:0.85rem;">
+      Haz clic en <strong>▼ hijos</strong> para abrir o cerrar cada rama. Puedes deslizar hacia los lados para recorrer el árbol.
     </p>
     <div id="treeRoot" class="tree"></div>
+    <div id="unlinkedContainer"></div>
   </div>
 </div>
 
@@ -171,12 +212,12 @@
 
   // ⚙️ PEGA AQUÍ TU CONFIGURACIÓN DE FIREBASE
   const firebaseConfig = {
-    apiKey: "AIzaSyAJFS8upgmIYnX9n0iwN50_diX4UZTLmts",
-    authDomain: "familia-cruzat-valdes-468b6.firebaseapp.com",
-    projectId: "familia-cruzat-valdes-468b6",
-    storageBucket: "familia-cruzat-valdes-468b6.firebasestorage.app",
-    messagingSenderId: "156654089118",
-    appId: "1:156654089118:web:bcf9425bc72ececaff5c8f"
+    apiKey: "TU_API_KEY",
+    authDomain: "TU_PROYECTO.firebaseapp.com",
+    projectId: "TU_PROYECTO",
+    storageBucket: "TU_PROYECTO.appspot.com",
+    messagingSenderId: "TU_SENDER_ID",
+    appId: "TU_APP_ID"
   };
 
   const app = initializeApp(firebaseConfig);
@@ -582,33 +623,83 @@
     ).join("") || "<small>Sin resultados</small>";
   };
 
-  function renderTree() {
+  function renderTree(expandDepth = 1) {
     const root = document.getElementById("treeRoot");
+    const unlinkedBox = document.getElementById("unlinkedContainer");
     const byId = Object.fromEntries(PEOPLE.map(p => [p.id, p]));
     const rendered = new Set();
 
-    function buildNode(person) {
+    function buildNode(person, depth = 0) {
       if (rendered.has(person.id)) return "";
       rendered.add(person.id);
+
       const spouse = person.spouseId ? byId[person.spouseId] : null;
       if (spouse) rendered.add(spouse.id);
-      const children = PEOPLE.filter(c => c.parentId === person.id || (spouse && c.parentId === spouse.id));
-      let html = `<li><div class="person-node">
+
+      const children = PEOPLE
+        .filter(c => c.parentId === person.id || (spouse && c.parentId === spouse.id))
+        .sort((a, b) => a.date.localeCompare(b.date));
+
+      const isAbuelos = person.category === "Abuelos";
+      const isCollapsed = depth >= expandDepth;
+
+      let html = `<li><div class="person-node ${isAbuelos ? 'abuelos-node' : ''}">
         <span class="badge ${person.category}">${person.category}</span>
-        <strong>${person.name}</strong> <small>(${calculateAgeThisYear(person.date)})</small>
+        <strong>${person.name}</strong>
+        <small style="color:#666;">${calculateAgeThisYear(person.date)} años</small>
         <button class="edit-icon" onclick="openModal('${person.id}')">✏️ Editar</button>`;
+
       if (spouse) {
-        html += `<span class="spouse-tag">💍 ${spouse.name} (${calculateAgeThisYear(spouse.date)})
-          <button class="edit-icon" onclick="openModal('${spouse.id}')">✏️</button></span>`;
+        html += `<div class="spouse-tag">💍 ${spouse.name} (${calculateAgeThisYear(spouse.date)})
+          <button class="edit-icon" onclick="openModal('${spouse.id}')">✏️</button></div>`;
       }
+
+      if (children.length > 0) {
+        const label = isCollapsed ? `▼ ${children.length} hijo${children.length > 1 ? 's' : ''}` : `▲ Ocultar (${children.length})`;
+        html += `<button class="branch-toggle" data-count="${children.length}" onclick="toggleBranch(this)">${label}</button>`;
+      }
+
       html += `</div>`;
-      if (children.length) html += `<ul>` + children.map(buildNode).join("") + `</ul>`;
+
+      if (children.length > 0) {
+        html += `<ul class="${isCollapsed ? 'collapsed' : ''}">` +
+          children.map(c => buildNode(c, depth + 1)).join("") +
+          `</ul>`;
+      }
       return html + `</li>`;
     }
 
-    const roots = PEOPLE.filter(p => !p.parentId).sort((a,b) => (a.category === "Abuelos" ? -1 : 1));
-    root.innerHTML = `<ul>` + roots.map(buildNode).join("") + `</ul>`;
+    const abuelos = PEOPLE.filter(p => p.category === "Abuelos" && !p.parentId);
+    const mainRoots = abuelos.length ? abuelos : PEOPLE.filter(p => !p.parentId);
+
+    root.innerHTML = `<ul>` + mainRoots.map(r => buildNode(r, 0)).join("") + `</ul>`;
+
+    const unlinked = PEOPLE.filter(p => !rendered.has(p.id));
+    if (unlinked.length > 0) {
+      unlinkedBox.innerHTML = `<div class="unlinked-box">
+        <h4>🔗 Pendientes de enlazar al árbol (${unlinked.length}) — activa Modo Admin para asignarles pareja o padre:</h4>
+        <div class="unlinked-list">` +
+        unlinked.map(p => `<div class="person-node" style="min-width:130px;">
+          <span class="badge ${p.category}">${p.category}</span>
+          <strong>${p.name}</strong>
+          <button class="edit-icon" onclick="openModal('${p.id}')">✏️ Enlazar</button>
+        </div>`).join("") +
+        `</div></div>`;
+    } else {
+      unlinkedBox.innerHTML = "";
+    }
   }
+
+  window.toggleBranch = (btn) => {
+    const li = btn.closest("li");
+    const ul = li.querySelector(":scope > ul");
+    if (!ul) return;
+    const count = btn.getAttribute("data-count");
+    const collapsed = ul.classList.toggle("collapsed");
+    btn.textContent = collapsed ? `▼ ${count} hijo${count > 1 ? 's' : ''}` : `▲ Ocultar (${count})`;
+  };
+
+  window.setTreeDepth = (depth) => renderTree(depth);
 
   window.switchTab = (tab, btn) => {
     document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
