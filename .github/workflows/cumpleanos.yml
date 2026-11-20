@@ -3,7 +3,12 @@ name: Recordatorio Diario de Cumpleaños
 on:
   schedule:
     - cron: '0 11 * * *' # 8:00 AM hora Chile (verano) / 7:00 AM (invierno)
-  workflow_dispatch: # Te permite probarlo manualmente con un botón
+  workflow_dispatch:
+    inputs:
+      force_all:
+        description: 'Enviar ahora a TODOS los suscriptores (true = siempre envía)'
+        required: false
+        default: 'true'
 
 jobs:
   send:
@@ -19,3 +24,4 @@ jobs:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
           GMAIL_USER: ${{ secrets.GMAIL_USER }}
           GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+          FORCE_ALL: ${{ github.event.inputs.force_all }}
