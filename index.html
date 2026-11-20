@@ -677,7 +677,7 @@
     .form-row { grid-template-columns: 1fr; }
   }
 
-  /* Pantallas muy angostas (ej. 360px o menos) */
+  /* Pantallas muy angostas (360px o menos) */
   @media (max-width: 380px) {
     .calendar-grid { gap: 2px; }
     .day { min-height: 58px; padding: 3px 1.5px; }
@@ -696,7 +696,7 @@
       <span>•</span>
       <span id="statsLabel">Cargando...</span>
       <span id="syncStatus" class="sync-pill">⚡ Cargando...</span>
-      <span class="ver-tag">v7</span>
+      <span class="ver-tag">v8</span>
     </div>
   </div>
   <div class="top-actions">
@@ -710,7 +710,7 @@
   <span class="admin-bar-label">🔓 Modo Administrador activo</span>
   <div class="admin-bar-actions">
     <button class="btn btn-primary" onclick="openModal()">+ Agregar familiar</button>
-    <button class="btn" onclick="openTestEmailModal()">📧 Probar correo</button>
+    <button class="btn" onclick="openTestEmailModal()">📧 Enviar recordatorio</button>
     <button class="btn" onclick="syncInitialToFirebase()">☁️ Sincronizar base</button>
   </div>
 </div>
@@ -867,6 +867,7 @@
     <div class="form-group">
       <label>Repositorio de GitHub (usuario/repositorio)</label>
       <input type="text" id="te_repo" placeholder="usuario/cumpleanos-cruzat">
+      <div class="form-help">Se detecta automáticamente al abrir desde GitHub Pages.</div>
     </div>
     <div class="form-group">
       <label>Token de GitHub (solo se guarda en este dispositivo)</label>
@@ -1088,10 +1089,9 @@ const INITIAL_BIRTHDAYS = [
 
 const INITIAL_GENDER_BY_ID = Object.fromEntries(INITIAL_BIRTHDAYS.map(p => [p.id, p.gender]));
 
-const CACHE_KEY = "cruzat_people_cache_v7";
+const CACHE_KEY = "cruzat_people_cache_v8";
 const GH_TOKEN_KEY = "cruzat_gh_admin_token";
 const GH_REPO_KEY = "cruzat_gh_admin_repo";
-const GH_EMAIL_KEY = "cruzat_gh_test_email";
 
 const monthNames = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
 const shortMonths = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
@@ -1099,7 +1099,7 @@ const shortMonths = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct'
 let PEOPLE = [];
 let adminUnlocked = false;
 let currentMonth = new Date().getMonth();
-let calendarListMode = false; // Siempre parte en calendario mensual completo de 7 columnas
+let calendarListMode = false;
 let currentTreeDepth = 1;
 let treeZoom = 1;
 let treeVerticalMode = window.innerWidth <= 760;
@@ -1149,7 +1149,6 @@ function getInitials(name) {
   return (words[0][0] + words[words.length - 1][0]).toUpperCase();
 }
 
-// Nombre compacto para que quepa limpio en las 7 columnas del celular
 function getShortCalendarName(name) {
   const words = String(name || "").trim().split(/\s+/).filter(Boolean);
   if (!words.length) return "";
@@ -1405,7 +1404,6 @@ function renderMonth(monthIndex) {
   container.innerHTML = html;
 }
 
-// Al tocar un badge dentro del calendario: en celular con varios cumpleaños abre el día para facilitar el toque
 function onCalendarBadgeClick(event, personId, monthIndex, day) {
   event.stopPropagation();
   if (window.innerWidth <= 760 && !calendarListMode) {
@@ -1848,7 +1846,7 @@ async function triggerTestEmail() {
       const hint = res.status === 401 || res.status === 403
         ? "Revisa que tu token tenga permiso <strong>Actions: Read and write</strong>."
         : res.status === 422
-        ? "Actualiza primero el archivo <code>.github/workflows/cumpleanos.yml</code> en GitHub."
+        ? "Asegúrate de haber actualizado <code>.github/workflows/cumpleanos.yml</code> en GitHub."
         : "Revisa el nombre del repositorio.";
       statusEl.innerHTML = `<span style="color:#be123c;">❌ Error (${res.status}): ${esc(err.message || "")}<br>${hint}</span>`;
       return;
@@ -1856,7 +1854,6 @@ async function triggerTestEmail() {
 
     statusEl.innerHTML = `<span style="color:#0369a1;">🔄 Ejecutando envío de correos... (espera unos 20-35 segundos)</span>`;
 
-    // Espera y consulta el resultado real en GitHub Actions
     for (let i = 0; i < 12; i++) {
       await new Promise(r => setTimeout(r, 4000));
       const r = await fetch(`https://api.github.com/repos/${repo}/actions/workflows/cumpleanos.yml/runs?per_page=1`, { headers });
@@ -1880,38 +1877,6 @@ async function triggerTestEmail() {
     statusEl.innerHTML = `<span style="color:#be123c;">❌ Error de red al conectar con GitHub.</span>`;
   } finally {
     btn.disabled = false; btn.textContent = "Enviar a todos";
-  }
-}
-
-  localStorage.setItem(GH_EMAIL_KEY, email);
-  localStorage.setItem(GH_REPO_KEY, repo);
-  localStorage.setItem(GH_TOKEN_KEY, token);
-
-  const btn = document.getElementById("btnSendTestEmail");
-  btn.disabled = true; btn.textContent = "Enviando...";
-  statusEl.innerHTML = `<span style="color:#0369a1;">⏳ Solicitando envío a GitHub Actions...</span>`;
-
-  try {
-    const res = await fetch(`https://api.github.com/repos/${repo}/actions/workflows/cumpleanos.yml/dispatches`, {
-      method: "POST",
-      headers: {
-        "Accept": "application/vnd.github+json",
-        "Authorization": `Bearer ${token}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ ref: "main", inputs: { test_email: email } })
-    });
-
-    if (res.status === 204) {
-      statusEl.innerHTML = `<span style="color:#047857; font-weight:600;">✅ ¡Orden enviada! En 30 a 60 segundos debería llegar el correo de prueba a ${esc(email)}.</span>`;
-    } else {
-      const err = await res.json().catch(() => ({}));
-      statusEl.innerHTML = `<span style="color:#be123c;">❌ Error (${res.status}): ${esc(err.message || "Revisa el token, el nombre del repo y que cumpleanos.yml esté actualizado.")}</span>`;
-    }
-  } catch (e) {
-    statusEl.innerHTML = `<span style="color:#be123c;">❌ No se pudo conectar con GitHub.</span>`;
-  } finally {
-    btn.disabled = false; btn.textContent = "Enviar prueba";
   }
 }
 
