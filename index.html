@@ -857,35 +857,30 @@
   </div>
 </div>
 
-<!-- MODAL PROBAR ENVÍO DE CORREO (MODO ADMIN) -->
+<!-- MODAL ENVIAR RECORDATORIO A TODOS LOS SUSCRIPTORES (MODO ADMIN) -->
 <div id="testEmailModal" class="modal-backdrop" onclick="if(event.target===this) closeTestEmailModal()">
   <div class="modal">
-    <h3>📧 Probar envío de correo</h3>
+    <h3>📧 Enviar recordatorio a suscriptores</h3>
     <p style="margin:0 0 12px; font-size:0.86rem; color:var(--muted);">
-      Envía un correo de prueba <strong>solo a tu mail</strong> usando GitHub Actions para confirmar que Firebase y Gmail están funcionando (no envía nada a la familia).
+      Envía el correo recordatorio <strong>a todas las personas inscritas en "🔔 Avisos correo"</strong>. Si hoy hay cumpleaños manda los de hoy; si no, envía los próximos cumpleaños.
     </p>
-    <div class="form-group">
-      <label>Correo donde quieres recibir la prueba</label>
-      <input type="email" id="te_email" placeholder="tu-correo@gmail.com">
-    </div>
     <div class="form-group">
       <label>Repositorio de GitHub (usuario/repositorio)</label>
       <input type="text" id="te_repo" placeholder="usuario/cumpleanos-cruzat">
-      <div class="form-help">Se detecta automáticamente al abrir desde GitHub Pages.</div>
     </div>
     <div class="form-group">
       <label>Token de GitHub (solo se guarda en este dispositivo)</label>
       <input type="password" id="te_token" placeholder="github_pat_...">
       <div class="form-help">
-        Créalo una sola vez en GitHub → Settings → Developer settings → Fine-grained tokens (permiso <strong>Actions: Read and write</strong> en este repo).
+        Token Fine-grained con permiso <strong>Actions: Read and write</strong> en este repositorio.
       </div>
     </div>
-    <div id="te_status" style="font-size:0.84rem; margin-top:8px;"></div>
+    <div id="te_status" style="font-size:0.84rem; margin-top:8px; line-height:1.45;"></div>
     <div class="modal-actions">
-      <a id="te_manualLink" class="btn" href="#" target="_blank" rel="noopener">↗️ Abrir Actions</a>
+      <a id="te_manualLink" class="btn" href="#" target="_blank" rel="noopener">↗️ Ver en Actions</a>
       <div class="modal-actions-right">
         <button class="btn" onclick="closeTestEmailModal()">Cerrar</button>
-        <button id="btnSendTestEmail" class="btn btn-primary" onclick="triggerTestEmail()">Enviar prueba</button>
+        <button id="btnSendTestEmail" class="btn btn-primary" onclick="triggerTestEmail()">Enviar a todos</button>
       </div>
     </div>
   </div>
@@ -1803,7 +1798,6 @@ function openTestEmailModal() {
   if (!adminUnlocked) return;
   const repo = detectGitHubRepo();
   document.getElementById("te_repo").value = repo;
-  document.getElementById("te_email").value = localStorage.getItem(GH_EMAIL_KEY) || "";
   document.getElementById("te_token").value = localStorage.getItem(GH_TOKEN_KEY) || "";
   document.getElementById("te_status").innerHTML = "";
   const manualLink = document.getElementById("te_manualLink");
@@ -1814,23 +1808,80 @@ function openTestEmailModal() {
 function closeTestEmailModal() { document.getElementById("testEmailModal").classList.remove("open"); }
 
 async function triggerTestEmail() {
-  const email = document.getElementById("te_email").value.trim();
   const repo = document.getElementById("te_repo").value.trim().replace(/^\/|\/$/g, "");
   const token = document.getElementById("te_token").value.trim();
   const statusEl = document.getElementById("te_status");
 
-  if (!email || !email.includes("@")) {
-    statusEl.innerHTML = `<span style="color:#be123c;">Ingresa un correo válido para recibir la prueba.</span>`;
-    return;
-  }
   if (!repo || !repo.includes("/")) {
     statusEl.innerHTML = `<span style="color:#be123c;">Escribe el repositorio como <strong>usuario/nombre-repo</strong>.</span>`;
     return;
   }
   if (!token) {
-    statusEl.innerHTML = `<span style="color:#b45309;">Falta el Token de GitHub. También puedes usar el botón <strong>↗️ Abrir Actions</strong> para dispararlo directo en GitHub.</span>`;
+    statusEl.innerHTML = `<span style="color:#b45309;">Falta el Token de GitHub. También puedes presionar <strong>↗️ Ver en Actions</strong> y darle a <em>Run workflow</em> directo allá.</span>`;
     return;
   }
+  if (!confirm("¿Confirmas enviar ahora el correo recordatorio a TODOS los suscriptores?")) return;
+
+  localStorage.setItem(GH_REPO_KEY, repo);
+  localStorage.setItem(GH_TOKEN_KEY, token);
+
+  const btn = document.getElementById("btnSendTestEmail");
+  btn.disabled = true; btn.textContent = "Enviando...";
+  statusEl.innerHTML = `<span style="color:#0369a1;">⏳ Disparando envío en GitHub Actions...</span>`;
+
+  const headers = {
+    "Accept": "application/vnd.github+json",
+    "Authorization": `Bearer ${token}`,
+    "Content-Type": "application/json"
+  };
+
+  try {
+    const startTime = Date.now();
+    const res = await fetch(`https://api.github.com/repos/${repo}/actions/workflows/cumpleanos.yml/dispatches`, {
+      method: "POST",
+      headers,
+      body: JSON.stringify({ ref: "main", inputs: { force_all: "true" } })
+    });
+
+    if (res.status !== 204) {
+      const err = await res.json().catch(() => ({}));
+      const hint = res.status === 401 || res.status === 403
+        ? "Revisa que tu token tenga permiso <strong>Actions: Read and write</strong>."
+        : res.status === 422
+        ? "Actualiza primero el archivo <code>.github/workflows/cumpleanos.yml</code> en GitHub."
+        : "Revisa el nombre del repositorio.";
+      statusEl.innerHTML = `<span style="color:#be123c;">❌ Error (${res.status}): ${esc(err.message || "")}<br>${hint}</span>`;
+      return;
+    }
+
+    statusEl.innerHTML = `<span style="color:#0369a1;">🔄 Ejecutando envío de correos... (espera unos 20-35 segundos)</span>`;
+
+    // Espera y consulta el resultado real en GitHub Actions
+    for (let i = 0; i < 12; i++) {
+      await new Promise(r => setTimeout(r, 4000));
+      const r = await fetch(`https://api.github.com/repos/${repo}/actions/workflows/cumpleanos.yml/runs?per_page=1`, { headers });
+      if (!r.ok) continue;
+      const data = await r.json();
+      const run = data.workflow_runs && data.workflow_runs[0];
+      if (!run || new Date(run.created_at).getTime() < startTime - 15000) continue;
+
+      if (run.status === "completed") {
+        if (run.conclusion === "success") {
+          statusEl.innerHTML = `<span style="color:#047857; font-weight:700;">✅ ¡Listo! Correos enviados a todos los suscriptores.</span>`;
+        } else {
+          statusEl.innerHTML = `<span style="color:#be123c; font-weight:700;">❌ El envío falló en GitHub Actions.</span> <a href="${esc(run.html_url)}" target="_blank" rel="noopener">Ver motivo exacto aquí ↗️</a>`;
+        }
+        return;
+      }
+    }
+
+    statusEl.innerHTML = `<span style="color:#b45309;">⏳ Sigue ejecutándose en segundo plano. Revisa el resultado en <strong>↗️ Ver en Actions</strong>.</span>`;
+  } catch (e) {
+    statusEl.innerHTML = `<span style="color:#be123c;">❌ Error de red al conectar con GitHub.</span>`;
+  } finally {
+    btn.disabled = false; btn.textContent = "Enviar a todos";
+  }
+}
 
   localStorage.setItem(GH_EMAIL_KEY, email);
   localStorage.setItem(GH_REPO_KEY, repo);
