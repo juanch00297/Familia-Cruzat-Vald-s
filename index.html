@@ -15,11 +15,15 @@
     --border: #e2e8f0;
     --radius: 14px;
     --shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
+    --male: #2563eb;
+    --male-bg: #dbeafe;
+    --female: #db2777;
+    --female-bg: #fce7f3;
   }
   * { box-sizing: border-box; }
   body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, Helvetica, Arial, sans-serif;
-    max-width: 1180px;
+    max-width: 1220px;
     margin: 0 auto;
     padding: 18px 16px 40px;
     background: var(--bg);
@@ -81,7 +85,7 @@
   .view-section.active { display: block; animation: fadeIn 0.2s ease; }
   @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 
-  /* Próximos cumpleaños */
+  /* Tarjetas generales */
   .card {
     background: var(--card); border-radius: var(--radius); padding: 18px;
     box-shadow: var(--shadow); border: 1px solid var(--border); margin-bottom: 16px;
@@ -151,7 +155,7 @@
   /* Badges categorías */
   .badge {
     display: inline-block; padding: 3px 8px; border-radius: 8px;
-    font-size: 0.75rem; color: #fff; font-weight: 600; cursor: pointer;
+    font-size: 0.74rem; color: #fff; font-weight: 600; cursor: pointer;
     line-height: 1.25; transition: transform 0.12s, opacity 0.12s;
     word-break: break-word;
   }
@@ -168,7 +172,7 @@
   }
   .legend-item { display: flex; align-items: center; gap: 6px; }
 
-  /* ================= ÁRBOL GENEALÓGICO ================= */
+  /* ================= ÁRBOL GENEALÓGICO MEJORADO ================= */
   .tree-toolbar {
     display: flex; justify-content: space-between; align-items: center;
     gap: 10px; flex-wrap: wrap; margin-bottom: 12px;
@@ -176,23 +180,91 @@
   .tree-controls { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
   .zoom-label { font-size: 0.82rem; font-weight: 700; color: var(--muted); min-width: 44px; text-align: center; }
 
+  /* Contenedor relativo para fijar el cuadro de estadísticas arriba a la derecha */
+  .tree-canvas-wrap {
+    position: relative;
+  }
+
+  /* Cuadro de Estadísticas flotante (arriba a la derecha) */
+  .tree-stats-card {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    z-index: 30;
+    width: 268px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid #cbd5e1;
+    border-radius: 14px;
+    padding: 13px 14px;
+    box-shadow: 0 10px 28px rgba(15, 23, 42, 0.12);
+    transition: all 0.2s ease;
+  }
+  .tree-stats-card.minimized {
+    width: auto;
+    padding: 8px 12px;
+  }
+  .tree-stats-card.minimized .stats-body { display: none; }
+  .stats-header {
+    display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    font-size: 0.82rem; font-weight: 700; color: var(--text);
+  }
+  .stats-toggle-btn {
+    background: #f1f5f9; border: 1px solid #e2e8f0; color: #475569;
+    border-radius: 7px; padding: 2px 7px; font-size: 0.72rem; font-weight: 700; cursor: pointer;
+  }
+  .stats-toggle-btn:hover { background: #e2e8f0; }
+
+  .stats-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;
+    margin: 10px 0 12px;
+  }
+  .stat-kpi {
+    background: #f8fafc; border: 1px solid var(--border); border-radius: 10px;
+    padding: 7px 6px; text-align: center;
+  }
+  .stat-kpi .kpi-val { display: block; font-size: 1.15rem; font-weight: 800; line-height: 1.1; }
+  .stat-kpi .kpi-lbl { display: block; font-size: 0.68rem; font-weight: 600; color: var(--muted); margin-top: 2px; text-transform: uppercase; letter-spacing: 0.03em; }
+  .stat-kpi.kpi-hijos .kpi-val { color: #2563eb; }
+  .stat-kpi.kpi-nietos .kpi-val { color: #16a34a; }
+  .stat-kpi.kpi-bisnietos .kpi-val { color: #db2777; }
+
+  .gender-section { border-top: 1px solid var(--border); padding-top: 10px; }
+  .gender-title {
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 0.73rem; font-weight: 700; color: #475569; margin-bottom: 6px;
+  }
+  .gender-bar {
+    height: 10px; border-radius: 999px; overflow: hidden;
+    display: flex; background: #e2e8f0; margin-bottom: 7px;
+  }
+  .gender-bar-m { background: linear-gradient(90deg, #3b82f6, #2563eb); transition: width 0.35s ease; }
+  .gender-bar-f { background: linear-gradient(90deg, #f472b6, #db2777); transition: width 0.35s ease; }
+  .gender-labels {
+    display: flex; justify-content: space-between; gap: 6px; font-size: 0.74rem; font-weight: 600;
+  }
+  .g-male { color: var(--male); }
+  .g-female { color: var(--female); }
+  .stats-foot {
+    margin-top: 8px; font-size: 0.7rem; color: var(--muted); text-align: center;
+  }
+
   .tree-viewport {
-    background: #f8fafc;
+    background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
     background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
-    background-size: 20px 20px;
+    background-size: 22px 22px;
     border: 1px solid var(--border);
     border-radius: 12px;
     overflow: auto;
-    min-height: 460px;
-    max-height: 74vh;
-    padding: 28px 24px 40px;
+    min-height: 520px;
+    max-height: 76vh;
+    padding: 32px 28px 48px;
     cursor: grab;
     user-select: none;
-    position: relative;
   }
   .tree-viewport.grabbing { cursor: grabbing; }
 
-  /* Solución al bug de overflow en flexbox: width: max-content + margin auto */
   .tree-stage {
     width: max-content;
     margin: 0 auto;
@@ -201,60 +273,94 @@
   }
 
   .tree ul {
-    padding-top: 26px; position: relative; display: flex; justify-content: center;
+    padding-top: 28px; position: relative; display: flex; justify-content: center;
     margin: 0; padding-left: 0; list-style: none;
   }
   .tree > ul { padding-top: 0; }
   .tree li {
     display: flex; flex-direction: column; align-items: center;
-    position: relative; padding: 26px 8px 0 8px;
+    position: relative; padding: 28px 9px 0 9px;
   }
   .tree > ul > li { padding-top: 0; }
 
-  /* Líneas conectoras */
+  /* Líneas conectoras del organigrama */
   .tree li::before, .tree li::after {
     content: ''; position: absolute; top: 0; right: 50%;
-    border-top: 2px solid #cbd5e1; width: 50%; height: 26px;
+    border-top: 2px solid #94a3b8; width: 50%; height: 28px; opacity: 0.55;
   }
-  .tree li::after { right: auto; left: 50%; border-left: 2px solid #cbd5e1; }
+  .tree li::after { right: auto; left: 50%; border-left: 2px solid #94a3b8; }
   .tree li:only-child::after, .tree li:only-child::before { display: none; }
   .tree li:only-child { padding-top: 0; }
   .tree li:first-child::before, .tree li:last-child::after { border: 0 none; }
-  .tree li:last-child::before { border-right: 2px solid #cbd5e1; border-radius: 0 8px 0 0; }
-  .tree li:first-child::after { border-radius: 8px 0 0 0; }
+  .tree li:last-child::before { border-right: 2px solid #94a3b8; border-radius: 0 10px 0 0; }
+  .tree li:first-child::after { border-radius: 10px 0 0 0; }
   .tree ul ul::before {
     content: ''; position: absolute; top: 0; left: 50%;
-    border-left: 2px solid #cbd5e1; width: 0; height: 26px;
+    border-left: 2px solid #94a3b8; width: 0; height: 28px; opacity: 0.55;
   }
   .tree ul.collapsed { display: none; }
 
-  /* Tarjeta nodo del árbol */
+  /* Tarjeta mejorada de nodo del árbol */
   .person-node {
     display: flex; flex-direction: column; align-items: center; gap: 4px;
-    padding: 10px 12px; border-radius: 12px; background: #fff;
-    border: 1px solid #cbd5e1; box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
-    width: 178px; text-align: center; position: relative; z-index: 2;
+    padding: 12px 12px 10px; border-radius: 14px; background: #fff;
+    border: 1px solid #cbd5e1; border-top: 4px solid #94a3b8;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
+    width: 186px; text-align: center; position: relative; z-index: 2;
+    transition: transform 0.16s ease, box-shadow 0.16s ease;
   }
-  .person-node.abuelos-node {
-    background: linear-gradient(180deg, #fffbeb 0%, #fef3c7 100%);
-    border: 2px solid #f59e0b; width: 235px;
+  .person-node:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.11);
   }
-  .person-node strong { font-size: 0.85rem; line-height: 1.25; color: var(--text); }
-  .person-meta { font-size: 0.74rem; color: var(--muted); }
+  .person-node.cat-Abuelos {
+    background: linear-gradient(180deg, #fffbeb 0%, #fef9c3 100%);
+    border-color: #f59e0b; border-top: 5px solid #d97706;
+    width: 248px; box-shadow: 0 8px 24px rgba(245, 158, 11, 0.18);
+  }
+  .person-node.cat-Tio { border-top-color: #2563eb; }
+  .person-node.cat-Nieto { border-top-color: #16a34a; }
+  .person-node.cat-Bisnieto { border-top-color: #ec4899; }
+  .person-node.cat-Casado { border-top-color: #7c3aed; }
+
+  .node-top-row {
+    display: flex; align-items: center; justify-content: center; gap: 7px; margin-bottom: 2px;
+  }
+  .avatar {
+    width: 28px; height: 28px; border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 0.72rem; font-weight: 800; flex-shrink: 0;
+  }
+  .avatar.M { background: var(--male-bg); color: var(--male); border: 1px solid #93c5fd; }
+  .avatar.F { background: var(--female-bg); color: var(--female); border: 1px solid #f9a8d4; }
+
+  .person-node strong { font-size: 0.85rem; line-height: 1.22; color: var(--text); }
+  .person-meta { font-size: 0.73rem; color: var(--muted); }
+
   .spouse-tag {
-    font-size: 0.75rem; color: #5b21b6; background: #f5f3ff;
-    border: 1px solid #ddd6fe; padding: 4px 8px; border-radius: 8px;
-    margin-top: 3px; width: 100%; line-height: 1.25;
+    font-size: 0.74rem; color: #4c1d95; background: #f5f3ff;
+    border: 1px solid #ddd6fe; padding: 6px 8px; border-radius: 10px;
+    margin-top: 5px; width: 100%; line-height: 1.25;
+    display: flex; flex-direction: column; align-items: center; gap: 2px;
   }
+  .spouse-name-row {
+    display: flex; align-items: center; justify-content: center; gap: 5px; font-weight: 700;
+  }
+  .mini-dot {
+    width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex-shrink: 0;
+  }
+  .mini-dot.M { background: var(--male); }
+  .mini-dot.F { background: var(--female); }
+
   .branch-toggle {
-    margin-top: 6px; background: #eff6ff; border: 1px solid #bfdbfe; color: #1d4ed8;
-    border-radius: 999px; padding: 3px 10px; font-size: 0.73rem; font-weight: 700;
-    cursor: pointer; transition: background 0.15s;
+    margin-top: 7px; background: #eff6ff; border: 1px solid #bfdbfe; color: #1d4ed8;
+    border-radius: 999px; padding: 3px 11px; font-size: 0.72rem; font-weight: 700;
+    cursor: pointer; transition: all 0.15s;
   }
-  .branch-toggle:hover { background: #dbeafe; }
+  .branch-toggle:hover { background: #dbeafe; transform: scale(1.03); }
 
   .edit-icon {
-    cursor: pointer; font-size: 0.72rem; padding: 2px 7px; border-radius: 6px;
+    cursor: pointer; font-size: 0.7rem; padding: 2px 7px; border-radius: 6px;
     background: #fff; border: 1px solid #93c5fd; color: #1d4ed8;
     display: none; margin-top: 3px; font-weight: 600;
   }
@@ -266,7 +372,7 @@
   }
   .unlinked-box h4 { margin: 0 0 10px; color: #475569; font-size: 0.9rem; }
   .unlinked-list { display: flex; flex-wrap: wrap; gap: 10px; }
-  .unlinked-list .person-node { width: 165px; }
+  .unlinked-list .person-node { width: 170px; }
 
   /* Modal */
   .modal-backdrop {
@@ -280,6 +386,7 @@
     box-shadow: 0 20px 40px rgba(15, 23, 42, 0.25); max-height: 92vh; overflow-y: auto;
   }
   .modal h3 { margin: 0 0 14px; color: var(--text); font-size: 1.15rem; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .form-group { margin-bottom: 12px; }
   .form-group label { display: block; font-size: 0.82rem; font-weight: 700; color: #334155; margin-bottom: 4px; }
   .form-group input, .form-group select {
@@ -289,7 +396,7 @@
   .modal-actions { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-top: 18px; }
   .modal-actions-right { display: flex; gap: 8px; margin-left: auto; }
 
-  /* Responsive móvil: calendario pasa a lista limpia de días con cumpleaños */
+  /* Responsive móvil */
   @media (max-width: 760px) {
     header { padding: 14px 16px; }
     .brand h1 { font-size: 1.2rem; }
@@ -299,6 +406,13 @@
     .day.no-events:not(.today) { display: none; }
     .day { min-height: auto; padding: 10px 12px; }
     .day .weekday-mobile { display: inline; }
+    .tree-stats-card {
+      position: static;
+      width: 100%;
+      margin-bottom: 12px;
+      box-shadow: none;
+    }
+    .form-row { grid-template-columns: 1fr; }
   }
 </style>
 </head>
@@ -374,11 +488,55 @@
     <p style="margin:0 0 12px; color:var(--muted); font-size:0.84rem;">
       Haz clic en <strong>▼ hijos</strong> para desplegar cada rama. Arrastra el fondo para moverte por el árbol.
     </p>
-    <div id="treeViewport" class="tree-viewport">
-      <div id="treeStage" class="tree-stage">
-        <div id="treeRoot" class="tree"></div>
+
+    <div class="tree-canvas-wrap">
+      <!-- CUADRO DE ESTADÍSTICAS ARRIBA A LA DERECHA -->
+      <aside id="treeStatsCard" class="tree-stats-card">
+        <div class="stats-header">
+          <span>📊 Resumen Familiar</span>
+          <button class="stats-toggle-btn" onclick="toggleStatsCard()" id="statsToggleBtn" title="Ocultar / mostrar">−</button>
+        </div>
+        <div class="stats-body">
+          <div class="stats-grid">
+            <div class="stat-kpi kpi-hijos">
+              <span class="kpi-val" id="statHijos">0</span>
+              <span class="kpi-lbl">Hijos</span>
+            </div>
+            <div class="stat-kpi kpi-nietos">
+              <span class="kpi-val" id="statNietos">0</span>
+              <span class="kpi-lbl">Nietos</span>
+            </div>
+            <div class="stat-kpi kpi-bisnietos">
+              <span class="kpi-val" id="statBisnietos">0</span>
+              <span class="kpi-lbl">Bisnietos</span>
+            </div>
+          </div>
+
+          <div class="gender-section">
+            <div class="gender-title">
+              <span>Distribución por sexo</span>
+              <span id="statTotalBadge" style="color:var(--muted); font-weight:600;"></span>
+            </div>
+            <div class="gender-bar">
+              <div id="genderBarM" class="gender-bar-m" style="width:50%;"></div>
+              <div id="genderBarF" class="gender-bar-f" style="width:50%;"></div>
+            </div>
+            <div class="gender-labels">
+              <span class="g-male" id="statMaleTxt">♂ 0% (0)</span>
+              <span class="g-female" id="statFemaleTxt">♀ 0% (0)</span>
+            </div>
+            <div class="stats-foot" id="statsFoot"></div>
+          </div>
+        </div>
+      </aside>
+
+      <div id="treeViewport" class="tree-viewport">
+        <div id="treeStage" class="tree-stage">
+          <div id="treeRoot" class="tree"></div>
+        </div>
       </div>
     </div>
+
     <div id="unlinkedContainer"></div>
   </section>
 </div>
@@ -392,9 +550,19 @@
       <label>Nombre completo</label>
       <input type="text" id="f_name" required>
     </div>
-    <div class="form-group">
-      <label>Fecha de nacimiento</label>
-      <input type="date" id="f_date" required>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Fecha de nacimiento</label>
+        <input type="date" id="f_date" required>
+      </div>
+      <div class="form-group">
+        <label>Sexo</label>
+        <select id="f_gender">
+          <option value="">Automático (por nombre)</option>
+          <option value="M">Masculino (♂)</option>
+          <option value="F">Femenino (♀)</option>
+        </select>
+      </div>
     </div>
     <div class="form-group">
       <label>Categoría</label>
@@ -427,7 +595,7 @@
 <script>
 // ⚙️ PEGA AQUÍ TUS 6 CLAVES DE FIREBASE (Configuración del proyecto -> General -> Tus apps)
 const firebaseConfig = {
-  apiKey: "AIzaSyAJFS8upgmIYnX9n0iwN50_diX4UZTLmts",
+ apiKey: "AIzaSyAJFS8upgmIYnX9n0iwN50_diX4UZTLmts",
   authDomain: "familia-cruzat-valdes-468b6.firebaseapp.com",
   projectId: "familia-cruzat-valdes-468b6",
   storageBucket: "familia-cruzat-valdes-468b6.firebasestorage.app",
@@ -624,18 +792,29 @@ const INITIAL_BIRTHDAYS = [
   { id: "p_152", name: "Delia Costabal Fontaine", date: "2020-04-24", category: "Bisnieto", parentId: "p_30", spouseId: "" }
 ];
 
-const CACHE_KEY = "cruzat_people_cache_v2";
+const CACHE_KEY = "cruzat_people_cache_v3";
 const monthNames = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
 const shortMonths = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+
+// Excepciones de nombres para detectar sexo con precisión
+const FEMALE_NON_A = new Set([
+  "rosario","loreto","isabel","trinidad","pilar","luz","ines","inés","lourdes","carmen",
+  "paz","belen","belén","beatriz","raquel","esther","ester","soledad","mercedes","rocio","rocío",
+  "amparo","socorro","milagros","dolores","nieves","flor","sol","mar","noemi","noemí","ruth",
+  "edith","judith","ingrid","astrid","karen","miriam","myriam","vivian","evelyn","jocelyn",
+  "jazmin","jazmín","nicole","michelle","denise","denisse","celeste","irene","guadalupe","matilde",
+  "consuelo","marisol","abigail","scarlett"
+]);
+const MALE_ENDING_A = new Set(["luca","bautista","borja","joshua","nikola","ezra","noa"]);
 
 let PEOPLE = [];
 let adminUnlocked = false;
 let currentMonth = new Date().getMonth();
 let currentTreeDepth = 1;
 let treeZoom = 1;
-let fb = null; // Instancia de Firebase cargada en segundo plano
+let fb = null;
 
-// --- UTILIDADES SEGURAS ---
+// --- UTILIDADES ---
 function esc(str) {
   return String(str || "").replace(/[&<>"']/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));
 }
@@ -657,12 +836,33 @@ function ageForYear(dateStr, targetYear = new Date().getFullYear()) {
   return p ? targetYear - p.y : "?";
 }
 
+function getInitials(name) {
+  const words = String(name || "").trim().split(/\s+/).filter(Boolean);
+  if (!words.length) return "?";
+  if (words.length === 1) return words[0].slice(0, 2).toUpperCase();
+  return (words[0][0] + words[words.length - 1][0]).toUpperCase();
+}
+
+function inferGender(name) {
+  const first = String(name || "").trim().toLowerCase().split(/\s+/)[0] || "";
+  const clean = first.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  if (!clean) return "M";
+  if (FEMALE_NON_A.has(first) || FEMALE_NON_A.has(clean)) return "F";
+  if (MALE_ENDING_A.has(clean)) return "M";
+  return clean.endsWith("a") ? "F" : "M";
+}
+
+function getGender(person) {
+  return (person.gender === "M" || person.gender === "F") ? person.gender : inferGender(person.name);
+}
+
 function sanitizePerson(p, idx = 0) {
   return {
     id: String(p.id || "p_" + (idx + 1)),
     name: String(p.name || "Sin nombre").trim(),
     date: String(p.date || "2000-01-01"),
     category: String(p.category || "Nieto"),
+    gender: (p.gender === "M" || p.gender === "F") ? p.gender : "",
     parentId: p.parentId ? String(p.parentId) : "",
     spouseId: p.spouseId ? String(p.spouseId) : ""
   };
@@ -713,8 +913,7 @@ async function initFirebaseBackground() {
 
     const snap = await fs.getDocs(fs.collection(db, "personas"));
     if (!snap.empty) {
-      const remote = snap.docs.map((d, i) => sanitizePerson({ id: d.id, ...d.data() }, i));
-      PEOPLE = remote;
+      PEOPLE = snap.docs.map((d, i) => sanitizePerson({ id: d.id, ...d.data() }, i));
       saveLocalCache();
       renderAll();
       setStatus("🟢 En línea", "ok");
@@ -732,7 +931,54 @@ function renderAll() {
   renderNav();
   renderMonth(currentMonth);
   renderUpcoming();
+  renderTreeStats();
   renderTree(currentTreeDepth);
+}
+
+// --- ESTADÍSTICAS DEL ÁRBOL ---
+function renderTreeStats() {
+  const abueloIds = new Set(
+    PEOPLE.filter(p => p.category.toLowerCase().includes("abuelo")).map(p => p.id)
+  );
+
+  // Hijos directos de los abuelos
+  const hijosCount = abueloIds.size
+    ? PEOPLE.filter(p => abueloIds.has(p.parentId)).length
+    : PEOPLE.filter(p => p.category === "Tio" && p.parentId).length;
+
+  const nietosCount = PEOPLE.filter(p => p.category === "Nieto").length;
+  const bisnietosCount = PEOPLE.filter(p => p.category === "Bisnieto").length;
+
+  let maleCount = 0;
+  let femaleCount = 0;
+  PEOPLE.forEach(p => {
+    if (getGender(p) === "F") femaleCount++;
+    else maleCount++;
+  });
+
+  const total = maleCount + femaleCount || 1;
+  const malePct = ((maleCount / total) * 100).toFixed(1);
+  const femalePct = (100 - Number(malePct)).toFixed(1);
+
+  document.getElementById("statHijos").textContent = hijosCount;
+  document.getElementById("statNietos").textContent = nietosCount;
+  document.getElementById("statBisnietos").textContent = bisnietosCount;
+  document.getElementById("statTotalBadge").textContent = `${PEOPLE.length} total`;
+  document.getElementById("genderBarM").style.width = malePct + "%";
+  document.getElementById("genderBarF").style.width = femalePct + "%";
+  document.getElementById("statMaleTxt").textContent = `♂ ${malePct}% (${maleCount})`;
+  document.getElementById("statFemaleTxt").textContent = `♀ ${femalePct}% (${femaleCount})`;
+
+  const spousesCount = PEOPLE.length - abueloIds.size - hijosCount - nietosCount - bisnietosCount;
+  document.getElementById("statsFoot").textContent =
+    `Incluye ${abueloIds.size} abuelos y ${Math.max(0, spousesCount)} cónyuges`;
+}
+
+function toggleStatsCard() {
+  const card = document.getElementById("treeStatsCard");
+  const btn = document.getElementById("statsToggleBtn");
+  const isMin = card.classList.toggle("minimized");
+  btn.textContent = isMin ? "+" : "−";
 }
 
 // --- CALENDARIO ---
@@ -861,7 +1107,6 @@ function renderTree(expandDepth = currentTreeDepth) {
   const byId = Object.fromEntries(PEOPLE.map(p => [p.id, p]));
   const rendered = new Set();
 
-  // Busca pareja aunque esté enlazada en un solo sentido
   function findSpouse(person) {
     if (person.spouseId && byId[person.spouseId] && !rendered.has(person.spouseId)) {
       return byId[person.spouseId];
@@ -881,19 +1126,29 @@ function renderTree(expandDepth = currentTreeDepth) {
         (c.parentId === person.id || (spouse && c.parentId === spouse.id)))
       .sort((a, b) => (a.date || "").localeCompare(b.date || ""));
 
-    const isAbuelos = person.category === "Abuelos";
     const isCollapsed = depth >= expandDepth;
     const cat = person.category.replace(/\s+/g, "");
+    const g = getGender(person);
 
-    let html = `<li><div class="person-node ${isAbuelos ? 'abuelos-node' : ''}">
-      <span class="badge ${esc(cat)}">${esc(person.category)}</span>
+    let html = `<li><div class="person-node cat-${esc(cat)}">
+      <div class="node-top-row">
+        <span class="avatar ${g}" title="${g === 'M' ? 'Masculino' : 'Femenino'}">${esc(getInitials(person.name))}</span>
+        <span class="badge ${esc(cat)}">${esc(person.category)}</span>
+      </div>
       <strong>${esc(person.name)}</strong>
       <div class="person-meta">${formatShortDate(person.date)} • ${ageForYear(person.date)} años</div>
       <button class="edit-icon" onclick="openModal('${esc(person.id)}')">✏️ Editar</button>`;
 
     if (spouse) {
-      html += `<div class="spouse-tag">💍 ${esc(spouse.name)}<br><small>${formatShortDate(spouse.date)} (${ageForYear(spouse.date)})</small>
-        <div><button class="edit-icon" onclick="openModal('${esc(spouse.id)}')">✏️ Editar</button></div></div>`;
+      const sg = getGender(spouse);
+      html += `<div class="spouse-tag">
+        <div class="spouse-name-row">
+          <span class="mini-dot ${sg}"></span>
+          <span>💍 ${esc(spouse.name)}</span>
+        </div>
+        <small>${formatShortDate(spouse.date)} • ${ageForYear(spouse.date)} años</small>
+        <button class="edit-icon" onclick="openModal('${esc(spouse.id)}')">✏️ Editar</button>
+      </div>`;
     }
 
     if (children.length > 0) {
@@ -923,12 +1178,19 @@ function renderTree(expandDepth = currentTreeDepth) {
     unlinkedBox.innerHTML = `<div class="unlinked-box">
       <h4>🔗 Pendientes de enlazar al árbol (${unlinked.length}) — activa Modo Admin y asigna su pareja o padre:</h4>
       <div class="unlinked-list">` +
-      unlinked.map(p => `<div class="person-node">
-        <span class="badge ${esc(p.category.replace(/\s+/g,''))}">${esc(p.category)}</span>
-        <strong>${esc(p.name)}</strong>
-        <div class="person-meta">${formatShortDate(p.date)}</div>
-        <button class="edit-icon" onclick="openModal('${esc(p.id)}')">✏️ Enlazar</button>
-      </div>`).join("") +
+      unlinked.map(p => {
+        const g = getGender(p);
+        const cat = p.category.replace(/\s+/g, "");
+        return `<div class="person-node cat-${esc(cat)}">
+          <div class="node-top-row">
+            <span class="avatar ${g}">${esc(getInitials(p.name))}</span>
+            <span class="badge ${esc(cat)}">${esc(p.category)}</span>
+          </div>
+          <strong>${esc(p.name)}</strong>
+          <div class="person-meta">${formatShortDate(p.date)}</div>
+          <button class="edit-icon" onclick="openModal('${esc(p.id)}')">✏️ Enlazar</button>
+        </div>`;
+      }).join("") +
       `</div></div>`;
   } else {
     unlinkedBox.innerHTML = "";
@@ -1033,6 +1295,7 @@ function openModal(personId = null) {
   document.getElementById("f_id").value = p ? p.id : "";
   document.getElementById("f_name").value = p ? p.name : "";
   document.getElementById("f_date").value = p ? p.date : "";
+  document.getElementById("f_gender").value = p ? (p.gender || "") : "";
   document.getElementById("f_category").value = p ? p.category : "Bisnieto";
   document.getElementById("btnDelete").style.display = p ? "inline-flex" : "none";
 
@@ -1062,6 +1325,7 @@ async function saveForm() {
     id,
     name: document.getElementById("f_name").value.trim(),
     date: document.getElementById("f_date").value,
+    gender: document.getElementById("f_gender").value,
     category: document.getElementById("f_category").value,
     parentId: document.getElementById("f_parent").value,
     spouseId: document.getElementById("f_spouse").value
@@ -1073,7 +1337,6 @@ async function saveForm() {
   btn.disabled = true; btn.textContent = "Guardando...";
 
   try {
-    // Actualiza en memoria local (incluyendo pareja bidireccional)
     const idx = PEOPLE.findIndex(x => x.id === person.id);
     if (idx >= 0) PEOPLE[idx] = person; else PEOPLE.push(person);
 
@@ -1139,14 +1402,13 @@ async function syncInitialToFirebase() {
   if (!adminUnlocked) return;
   if (!fb) return alert("Firebase aún no está conectado. Revisa tus claves en firebaseConfig.");
 
-  if (!confirm("¿Reparar y subir los enlaces del árbol genealógico a Firebase? Se conservarán las personas nuevas y enlaces manuales que ya hayas hecho.")) return;
+  if (!confirm("¿Reparar y sincronizar los enlaces del árbol genealógico con Firebase? Se conservarán tus cambios manuales y personas nuevas.")) return;
 
-  setStatus("🔄 Reparando enlaces...");
+  setStatus("🔄 Sincronizando...");
   try {
     const currentById = Object.fromEntries(PEOPLE.map(p => [p.id, p]));
     const mergedMap = new Map();
 
-    // 1. Rellena parentId y spouseId faltantes desde la base pre-enlazada
     INITIAL_BIRTHDAYS.forEach(raw => {
       const base = sanitizePerson(raw);
       const existing = currentById[base.id];
@@ -1155,17 +1417,16 @@ async function syncInitialToFirebase() {
         name: existing ? existing.name : base.name,
         date: existing ? existing.date : base.date,
         category: base.category,
+        gender: (existing && existing.gender) ? existing.gender : "",
         parentId: (existing && existing.parentId) ? existing.parentId : base.parentId,
         spouseId: (existing && existing.spouseId) ? existing.spouseId : base.spouseId
       });
     });
 
-    // 2. Conserva cualquier persona nueva agregada manualmente
     PEOPLE.forEach(p => {
       if (!mergedMap.has(p.id)) mergedMap.set(p.id, sanitizePerson(p));
     });
 
-    // 3. Asegura que los Abuelos queden siempre como raíz principal
     if (mergedMap.has("p_1")) { mergedMap.get("p_1").parentId = ""; mergedMap.get("p_1").spouseId = "p_2"; }
     if (mergedMap.has("p_2")) { mergedMap.get("p_2").parentId = ""; mergedMap.get("p_2").spouseId = "p_1"; }
 
@@ -1178,12 +1439,13 @@ async function syncInitialToFirebase() {
     saveLocalCache();
     renderAll();
     setStatus("🟢 En línea", "ok");
-    alert(`¡Listo! Se repararon y guardaron ${fullList.length} personas con sus enlaces en Firebase.`);
+    alert(`¡Listo! Se guardaron ${fullList.length} personas con sus enlaces en Firebase.`);
   } catch (e) {
     console.error(e);
     alert("Error al sincronizar. Verifica las reglas de Firestore.");
   }
 }
+
 function switchTab(tab, btn) {
   document.querySelectorAll(".view-section").forEach(s => s.classList.remove("active"));
   document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
@@ -1192,7 +1454,6 @@ function switchTab(tab, btn) {
   if (tab === "tree") requestAnimationFrame(centerTreeViewport);
 }
 
-// Arranque inmediato
 bootInstant();
 </script>
 </body>
