@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Familia Cruzat Valdés — Cumpleaños y Árbol</title>
+<style>
+  :root { --primary:#0077cc; --bg:#f0f2f5; --card:#fff; --text:#333; }
+  body { font-family:"Segoe UI",Roboto,Helvetica,Arial,sans-serif; max-width:1100px; margin:20px auto; padding:16px; background:var(--bg); color:var(--text); }
+  header { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:12px; margin-bottom:16px; }
+  h1 { margin:0; font-size:1.7rem; color:var(--primary); }
+  .today { font-size:0.95rem; color:#555; margin-top:4px; }
+
+  .top-actions { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+  .btn { background:#fff; border:1px solid #ccc; padding:8px 14px; border-radius:8px; cursor:pointer; font-weight:600; font-size:0.9rem; transition:0.2s; }
+  .btn:hover { background:#eef6ff; border-color:var(--primary); }
+  .btn-primary { background:var(--primary); color:#fff; border-color:var(--primary); }
+  .btn-primary:hover { background:#005fa3; }
+  .btn-admin { background:#fff3cd; border-color:#ffc107; color:#856404; }
+  .btn-admin.unlocked { background:#d4edda; border-color:#28a745; color:#155724; }
+
+  .tabs { display:flex; gap:8px; margin-bottom:16px; border-bottom:2px solid #ddd; padding-bottom:8px; }
+  .tab-btn { background:none; border:none; padding:8px 16px; font-size:1rem; font-weight:600; color:#666; cursor:pointer; border-radius:8px; }
+  .tab-btn.active { background:var(--primary); color:#fff; }
+  .view-section { display:none; }
+  .view-section.active { display:block; }
+
+  .search-bar { width:100%; max-width:360px; padding:9px 12px; border:1px solid #ccc; border-radius:8px; font-size:0.95rem; margin-bottom:12px; }
+
+  .upcoming { margin:12px 0; padding:14px; background:var(--card); border-radius:12px; box-shadow:0 2px 6px rgba(0,0,0,0.08); }
+  #upcomingList { display:flex; gap:12px; overflow-x:auto; padding-bottom:6px; }
+  .upcomingCard { min-width:200px; background:#fafafa; border:1px solid #eee; border-radius:10px; padding:10px; flex-shrink:0; display:flex; flex-direction:column; gap:4px; font-size:0.85rem; }
+
+  #monthNav { margin:12px 0; display:flex; flex-wrap:wrap; gap:6px; }
+  #monthNav button { background:#fff; border:1px solid #ddd; padding:6px 12px; border-radius:6px; cursor:pointer; font-weight:500; }
+  #monthNav button.active { background:var(--primary); color:#fff; border-color:var(--primary); }
+  .month { background:var(--card); border-radius:12px; padding:18px; box-shadow:0 4px 12px rgba(0,0,0,0.08); }
+  .month h3 { margin:0 0 12px; font-size:1.3rem; color:var(--primary); text-align:center; }
+  .calendar-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:8px; }
+  .day { min-height:85px; padding:8px; border-radius:8px; background:#fafafa; border:1px solid rgba(0,0,0,0.06); display:flex; flex-direction:column; font-size:0.85rem; }
+  .day.inactive { background:#eee; color:#aaa; }
+  .day.today { background:#fffae6; border:2px solid #ffc107; }
+  .day .num { font-weight:700; }
+  .day .weekday { font-size:0.72rem; color:#666; margin-bottom:4px; }
+
+  .badge { display:inline-block; padding:3px 7px; border-radius:10px; font-size:0.78rem; margin-top:4px; color:#fff; font-weight:500; cursor:pointer; transition:0.15s; }
+  .badge:hover { opacity:0.88; transform:scale(1.02); }
+  .Abuelos { background:#FFD700; color:#000; }
+  .Tio { background:#1E90FF; }
+  .Nieto { background:#32CD32; }
+  .Bisnieto { background:#FF69B4; }
+  .Casado { background:#8A2BE2; }
+
+  .legend { margin-top:20px; display:flex; flex-wrap:wrap; gap:12px; font-size:0.9rem; }
+  .legend-item { display:flex; align-items:center; gap:6px; }
+
+  .tree-container { background:#fff; border-radius:12px; padding:20px; box-shadow:0 4px 12px rgba(0,0,0,0.08); overflow-x:auto; }
+  .tree ul { padding-top:16px; position:relative; list-style:none; padding-left:24px; border-left:2px solid #d0d7de; margin:6px 0 6px 12px; }
+  .tree > ul { border-left:none; padding-left:0; margin-left:0; }
+  .tree li { margin:10px 0; position:relative; }
+  .person-node { display:inline-flex; align-items:center; gap:8px; padding:8px 12px; border-radius:10px; background:#f8fafc; border:1px solid #dce3ea; box-shadow:0 1px 3px rgba(0,0,0,0.05); flex-wrap:wrap; }
+  .person-node .spouse-tag { font-size:0.82rem; color:#6b21a8; background:#f3e8ff; padding:2px 8px; border-radius:8px; }
+  .edit-icon { cursor:pointer; font-size:0.85rem; padding:2px 6px; border-radius:6px; background:#eef6ff; border:1px solid #b6d4fe; display:none; }
+  body.is-admin .edit-icon { display:inline-block; }
+
+  .modal-backdrop { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); justify-content:center; align-items:center; z-index:100; padding:16px; }
+  .modal-backdrop.open { display:flex; }
+  .modal { background:#fff; border-radius:12px; padding:20px; width:100%; max-width:440px; box-shadow:0 10px 25px rgba(0,0,0,0.2); }
+  .modal h3 { margin-top:0; color:var(--primary); }
+  .form-group { margin-bottom:12px; }
+  .form-group label { display:block; font-size:0.85rem; font-weight:600; margin-bottom:4px; }
+  .form-group input, .form-group select { width:100%; padding:8px; border:1px solid #ccc; border-radius:6px; box-sizing:border-box; }
+  .modal-actions { display:flex; justify-content:flex-end; gap:8px; margin-top:16px; }
+
+  @media(max-width:700px){ .calendar-grid { grid-template-columns:repeat(2,1fr); } }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>Cumpleaños Familia Cruzat Valdés</h1>
+    <div class="today" id="today"></div>
+  </div>
+  <div class="top-actions">
+    <button class="btn" onclick="subscribeEmail()">🔔 Avisos por correo</button>
+    <button id="btnAdmin" class="btn btn-admin" onclick="toggleAdmin()">🔒 Modo Admin</button>
+    <button id="btnAdd" class="btn btn-primary" style="display:none;" onclick="openModal()">+ Agregar Persona</button>
+    <button id="btnSeed" class="btn" style="display:none;" onclick="syncInitialToFirebase()">☁️ Subir datos iniciales</button>
+  </div>
+</header>
+
+<div class="tabs">
+  <button class="tab-btn active" onclick="switchTab('calendar', this)">📅 Calendario</button>
+  <button class="tab-btn" onclick="switchTab('tree', this)">🌳 Árbol Genealógico</button>
+</div>
+
+<!-- VISTA CALENDARIO -->
+<div id="view-calendar" class="view-section active">
+  <section class="upcoming">
+    <h3 style="margin:0 0 8px; color:#0077cc;">🎉 Próximos 7 días</h3>
+    <div id="upcomingList"></div>
+  </section>
+
+  <input type="text" id="searchInput" class="search-bar" placeholder="🔍 Buscar familiar por nombre..." oninput="renderSearch()">
+  <div id="searchResults" style="margin-bottom:12px;"></div>
+
+  <section id="monthNav"></section>
+  <section id="monthsContainer"></section>
+
+  <section class="legend">
+    <div class="legend-item"><span class="badge Abuelos">Abuelos</span> = Abuelos</div>
+    <div class="legend-item"><span class="badge Tio">Tio</span> = Tío/Tía</div>
+    <div class="legend-item"><span class="badge Nieto">Nieto</span> = Nieto/Nieta</div>
+    <div class="legend-item"><span class="badge Bisnieto">Bisnieto</span> = Bisnieto/Bisnieta</div>
+    <div class="legend-item"><span class="badge Casado">Casado</span> = Casado/a de Nieto/Nieta</div>
+  </section>
+</div>
+
+<!-- VISTA ÁRBOL GENEALÓGICO -->
+<div id="view-tree" class="view-section">
+  <div class="tree-container">
+    <p style="margin-top:0; color:#555; font-size:0.9rem;">
+      Para armar o ajustar ramas, activa el <strong>Modo Admin</strong> y edita cada persona para asignarle su <strong>Padre/Madre</strong> y su <strong>Pareja</strong>.
+    </p>
+    <div id="treeRoot" class="tree"></div>
+  </div>
+</div>
+
+<!-- MODAL AGREGAR / EDITAR -->
+<div id="personModal" class="modal-backdrop">
+  <div class="modal">
+    <h3 id="modalTitle">Agregar Persona</h3>
+    <input type="hidden" id="f_id">
+    <div class="form-group">
+      <label>Nombre completo</label>
+      <input type="text" id="f_name" required>
+    </div>
+    <div class="form-group">
+      <label>Fecha de nacimiento</label>
+      <input type="date" id="f_date" required>
+    </div>
+    <div class="form-group">
+      <label>Categoría</label>
+      <select id="f_category">
+        <option value="Abuelos">Abuelos</option>
+        <option value="Tio">Tío / Tía</option>
+        <option value="Nieto">Nieto / Nieta</option>
+        <option value="Casado">Casado/a</option>
+        <option value="Bisnieto">Bisnieto / Bisnieta</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Padre o Madre (para el árbol)</label>
+      <select id="f_parent"></select>
+    </div>
+    <div class="form-group">
+      <label>Pareja / Cónyuge (opcional)</label>
+      <select id="f_spouse"></select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveForm()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getFirestore, collection, getDocs, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+  // ⚙️ PEGA AQUÍ TU CONFIGURACIÓN DE FIREBASE
+  const firebaseConfig = {
+    apiKey: "AIzaSyAJFS8upgmIYnX9n0iwN50_diX4UZTLmts",
+    authDomain: "familia-cruzat-valdes-468b6.firebaseapp.com",
+    projectId: "familia-cruzat-valdes-468b6",
+    storageBucket: "familia-cruzat-valdes-468b6.firebasestorage.app",
+    messagingSenderId: "156654089118",
+    appId: "1:156654089118:web:bcf9425bc72ececaff5c8f"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  // --- DATOS INICIALES PRE-ENLAZADOS ---
+  const INITIAL_BIRTHDAYS = [
+    // ABUELOS
+    { id: "p_1", name: "Manuel Cruzat Infante", date: "1940-05-10", category: "Abuelos", parentId: "", spouseId: "p_2" },
+    { id: "p_2", name: "Delia Valdés Correa", date: "1944-07-01", category: "Abuelos", parentId: "", spouseId: "p_1" },
+
+    // TÍOS (HIJOS CRUZAT VALDÉS)
+    { id: "p_3", name: "Delia Cruzat Valdes", date: "1964-06-06", category: "Tio", parentId: "p_1", spouseId: "p_16" },
+    { id: "p_4", name: "Paula Cruzat Valdes", date: "1965-07-02", category: "Tio", parentId: "p_1", spouseId: "p_17" },
+    { id: "p_5", name: "Manuel Cruzat Valdes", date: "1966-11-06", category: "Tio", parentId: "p_1", spouseId: "p_18" },
+    { id: "p_6", name: "José Luis Cruzat Valdes", date: "1968-02-15", category: "Tio", parentId: "p_1", spouseId: "p_19" },
+    { id: "p_7", name: "Nicolás Cruzat Valdes", date: "1970-03-03", category: "Tio", parentId: "p_1", spouseId: "p_20" },
+    { id: "p_8", name: "Alejandra Cruzat Valdes", date: "1973-01-11", category: "Tio", parentId: "p_1", spouseId: "p_21" },
+    { id: "p_9", name: "María de los Ángeles Cruzat Valdes", date: "1976-11-26", category: "Tio", parentId: "p_1", spouseId: "p_22" },
+    { id: "p_10", name: "Gonzalo Cruzat Valdes", date: "1973-12-17", category: "Tio", parentId: "p_1", spouseId: "p_23" },
+    { id: "p_11", name: "Antonio Cruzat Valdes", date: "1978-01-29", category: "Tio", parentId: "p_1", spouseId: "p_24" },
+    { id: "p_12", name: "Francisco Cruzat Valdes", date: "1978-01-29", category: "Tio", parentId: "p_1", spouseId: "p_25" },
+    { id: "p_13", name: "Rodrigo Cruzat Valdes", date: "1979-12-27", category: "Tio", parentId: "p_1", spouseId: "" },
+    { id: "p_14", name: "Alicia Cruzat Valdes", date: "1981-08-31", category: "Tio", parentId: "p_1", spouseId: "p_26" },
+    { id: "p_15", name: "Rosario Cruzat Valdes", date: "1983-04-07", category: "Tio", parentId: "p_1", spouseId: "p_27" },
+
+    // TÍOS POLÍTICOS
+    { id: "p_16", name: "Juan Cristobal Fontaine Cox", date: "1963-06-13", category: "Tio", parentId: "", spouseId: "p_3" },
+    { id: "p_17", name: "Marcelo Cox Vial", date: "1961-03-17", category: "Tio", parentId: "", spouseId: "p_4" },
+    { id: "p_18", name: "María Teresa Errázuriz Ruiz-Tagle", date: "1970-08-08", category: "Tio", parentId: "", spouseId: "p_5" },
+    { id: "p_19", name: "Carola Montalva Brahm", date: "1972-11-16", category: "Tio", parentId: "", spouseId: "p_6" },
+    { id: "p_20", name: "Bernardita Errázuriz Ariztía", date: "1972-04-01", category: "Tio", parentId: "", spouseId: "p_7" },
+    { id: "p_21", name: "Salvador Valdés Correa", date: "1969-02-15", category: "Tio", parentId: "", spouseId: "p_8" },
+    { id: "p_22", name: "Martín Rasmussen Duhart", date: "1974-11-14", category: "Tio", parentId: "", spouseId: "p_9" },
+    { id: "p_23", name: "Francisca Del Solar Diaz", date: "1976-04-24", category: "Tio", parentId: "", spouseId: "p_10" },
+    { id: "p_24", name: "Ximena Matte Izquierdo", date: "1982-02-05", category: "Tio", parentId: "", spouseId: "p_11" },
+    { id: "p_25", name: "Isabel Vial Brown", date: "1981-06-11", category: "Tio", parentId: "", spouseId: "p_12" },
+    { id: "p_26", name: "Arturo Gana Barros", date: "1980-07-12", category: "Tio", parentId: "", spouseId: "p_14" },
+    { id: "p_27", name: "Diego Figueroa Icaza", date: "1981-01-31", category: "Tio", parentId: "", spouseId: "p_15" },
+
+    // NIETOS — Fontaine Cruzat (p_3)
+    { id: "p_30", name: "Delia Fontaine Cruzat", date: "1989-05-02", category: "Nieto", parentId: "p_3", spouseId: "p_115" },
+    { id: "p_32", name: "Juan Cristobal Fontaine Cruzat", date: "1990-08-26", category: "Nieto", parentId: "p_3", spouseId: "" },
+    { id: "p_34", name: "Max Fontaine Cruzat", date: "1992-04-27", category: "Nieto", parentId: "p_3", spouseId: "" },
+    { id: "p_37", name: "Loreto Fontaine Cruzat", date: "1993-10-13", category: "Nieto", parentId: "p_3", spouseId: "" },
+    { id: "p_40", name: "Nicolás Fontaine Cruzat", date: "1995-05-02", category: "Nieto", parentId: "p_3", spouseId: "" },
+    { id: "p_47", name: "Tomás Fontaine Cruzat", date: "1997-09-08", category: "Nieto", parentId: "p_3", spouseId: "" },
+    { id: "p_52", name: "Felipe Fontaine Cruzat", date: "1999-11-23", category: "Nieto", parentId: "p_3", spouseId: "" },
+    { id: "p_60", name: "María Jose Fontaine Cruzat", date: "2001-11-14", category: "Nieto", parentId: "p_3", spouseId: "" },
+
+    // NIETOS — Cox Cruzat (p_4)
+    { id: "p_28", name: "Marcelo Cox Cruzat", date: "1987-10-30", category: "Nieto", parentId: "p_4", spouseId: "" },
+    { id: "p_29", name: "Paula Cox Cruzat", date: "1989-02-15", category: "Nieto", parentId: "p_4", spouseId: "" },
+    { id: "p_31", name: "Alejandra Cox Cruzat", date: "1990-03-12", category: "Nieto", parentId: "p_4", spouseId: "" },
+    { id: "p_33", name: "Ignacio Cox Cruzat", date: "1991-08-12", category: "Nieto", parentId: "p_4", spouseId: "p_120" },
+    { id: "p_36", name: "Margarita Cox Cruzat", date: "1992-09-21", category: "Nieto", parentId: "p_4", spouseId: "" },
+    { id: "p_39", name: "Clemente Cox Cruzat", date: "1994-05-28", category: "Nieto", parentId: "p_4", spouseId: "p_122" },
+    { id: "p_43", name: "Anibal Cox Cruzat", date: "1996-07-22", category: "Nieto", parentId: "p_4", spouseId: "" },
+    { id: "p_49", name: "Amelia Cox Cruzat", date: "1998-05-15", category: "Nieto", parentId: "p_4", spouseId: "" },
+    { id: "p_55", name: "María Cox Cruzat", date: "2000-03-27", category: "Nieto", parentId: "p_4", spouseId: "" },
+    { id: "p_59", name: "Gregorio Cox Cruzat", date: "2001-09-05", category: "Nieto", parentId: "p_4", spouseId: "" },
+    { id: "p_65", name: "Pilar Cox Cruzat", date: "2002-10-28", category: "Nieto", parentId: "p_4", spouseId: "" },
+    { id: "p_71", name: "Delia Cox Cruzat", date: "2004-09-21", category: "Nieto", parentId: "p_4", spouseId: "" },
+    { id: "p_80", name: "Ismael Cox Cruzat", date: "2007-08-31", category: "Nieto", parentId: "p_4", spouseId: "" },
+    { id: "p_87", name: "Inés Cox Cruzat", date: "2009-01-13", category: "Nieto", parentId: "p_4", spouseId: "" },
+    { id: "p_94", name: "Sara Cox Cruzat", date: "2010-07-15", category: "Nieto", parentId: "p_4", spouseId: "" },
+
+    // NIETOS — Cruzat Errázuriz: Manuel y Tere (p_5)
+    { id: "p_35", name: "Manuel Cruzat Errázuriz", date: "1992-05-26", category: "Nieto", parentId: "p_5", spouseId: "p_123" },
+    { id: "p_38", name: "Vicente Cruzat Errázuriz", date: "1993-10-24", category: "Nieto", parentId: "p_5", spouseId: "" },
+    { id: "p_41", name: "Domingo Cruzat Errázuriz", date: "1995-07-22", category: "Nieto", parentId: "p_5", spouseId: "" },
+    { id: "p_45", name: "Juan Ignacio Cruzat Errázuriz", date: "1997-06-02", category: "Nieto", parentId: "p_5", spouseId: "p_125" },
+    { id: "p_53", name: "Teresita Cruzat Errázuriz", date: "1999-12-14", category: "Nieto", parentId: "p_5", spouseId: "" },
+    { id: "p_57", name: "Trinidad Cruzat Errázuriz", date: "2001-05-03", category: "Nieto", parentId: "p_5", spouseId: "" },
+    { id: "p_67", name: "Anita Cruzat Errázuriz", date: "2003-08-07", category: "Nieto", parentId: "p_5", spouseId: "" },
+    { id: "p_73", name: "Pablo Cruzat Errázuriz", date: "2005-05-24", category: "Nieto", parentId: "p_5", spouseId: "" },
+    { id: "p_83", name: "Fátima Cruzat Errázuriz", date: "2008-09-01", category: "Nieto", parentId: "p_5", spouseId: "" },
+    { id: "p_92", name: "Lucía Cruzat Errázuriz", date: "2010-03-18", category: "Nieto", parentId: "p_5", spouseId: "" },
+
+    // NIETOS — Cruzat Montalva (p_6)
+    { id: "p_46", name: "Carolina Cruzat Montalva", date: "1997-08-05", category: "Nieto", parentId: "p_6", spouseId: "" },
+    { id: "p_54", name: "José Luis Cruzat Montalva", date: "2000-01-26", category: "Nieto", parentId: "p_6", spouseId: "" },
+    { id: "p_56", name: "Emilia Cruzat Montalva", date: "2001-03-14", category: "Nieto", parentId: "p_6", spouseId: "" },
+    { id: "p_66", name: "Juan Diego Cruzat Montalva", date: "2002-12-13", category: "Nieto", parentId: "p_6", spouseId: "" },
+    { id: "p_79", name: "Lucas Cruzat Montalva", date: "2007-07-05", category: "Nieto", parentId: "p_6", spouseId: "" },
+    { id: "p_90", name: "María Paz Cruzat Montalva", date: "2009-10-16", category: "Nieto", parentId: "p_6", spouseId: "" },
+
+    // NIETOS — Cruzat Errázuriz: Nicolás y Bernardita (p_7)
+    { id: "p_48", name: "Bernardita Cruzat Errázuriz", date: "1998-02-25", category: "Nieto", parentId: "p_7", spouseId: "" },
+    { id: "p_51", name: "Sofía Cruzat Errázuriz", date: "1999-10-14", category: "Nieto", parentId: "p_7", spouseId: "" },
+    { id: "p_63", name: "Nicolás Cruzat Errázuriz", date: "2002-08-15", category: "Nieto", parentId: "p_7", spouseId: "" },
+    { id: "p_72", name: "María Cruzat Errázuriz", date: "2004-10-04", category: "Nieto", parentId: "p_7", spouseId: "" },
+    { id: "p_85", name: "Luz Cruzat Errázuriz", date: "2008-09-18", category: "Nieto", parentId: "p_7", spouseId: "" },
+
+    // NIETOS — Valdés Cruzat (p_8)
+    { id: "p_42", name: "Salvador Valdés Cruzat", date: "1996-01-10", category: "Nieto", parentId: "p_8", spouseId: "p_133" },
+    { id: "p_44", name: "Alejandra Valdés Cruzat", date: "1997-05-06", category: "Nieto", parentId: "p_8", spouseId: "" },
+    { id: "p_50", name: "Francisco Valdés Cruzat", date: "1999-05-07", category: "Nieto", parentId: "p_8", spouseId: "" },
+    { id: "p_61", name: "Josefina Valdés Cruzat", date: "2002-02-23", category: "Nieto", parentId: "p_8", spouseId: "" },
+    { id: "p_70", name: "Margarita Valdés Cruzat", date: "2004-07-13", category: "Nieto", parentId: "p_8", spouseId: "" },
+    { id: "p_76", name: "Juana Valdés Cruzat", date: "2006-07-13", category: "Nieto", parentId: "p_8", spouseId: "" },
+    { id: "p_84", name: "Agustín Valdés Cruzat", date: "2008-09-09", category: "Nieto", parentId: "p_8", spouseId: "" },
+
+    // NIETOS — Rasmussen Cruzat (p_9)
+    { id: "p_58", name: "Martín Rasmussen Cruzat", date: "2001-07-06", category: "Nieto", parentId: "p_9", spouseId: "" },
+    { id: "p_64", name: "María Jesus Rasmussen Cruzat", date: "2002-08-17", category: "Nieto", parentId: "p_9", spouseId: "" },
+    { id: "p_69", name: "Juan Pablo Rasmussen Cruzat", date: "2004-05-29", category: "Nieto", parentId: "p_9", spouseId: "" },
+    { id: "p_82", name: "Angélica Rasmussen Cruzat", date: "2008-08-29", category: "Nieto", parentId: "p_9", spouseId: "" },
+    { id: "p_100", name: "José Francisco Rasmussen Cruzat", date: "2013-01-30", category: "Nieto", parentId: "p_9", spouseId: "" },
+    { id: "p_106", name: "Domingo Rasmussen Cruzat", date: "2015-03-16", category: "Nieto", parentId: "p_9", spouseId: "" },
+    { id: "p_109", name: "Ana Rasmussen Cruzat", date: "2017-10-16", category: "Nieto", parentId: "p_9", spouseId: "" },
+
+    // NIETOS — Cruzat Del Solar (p_10)
+    { id: "p_62", name: "Francisca Cruzat Del Solar", date: "2002-06-10", category: "Nieto", parentId: "p_10", spouseId: "" },
+    { id: "p_68", name: "Gonzalo Cruzat Del Solar", date: "2003-11-13", category: "Nieto", parentId: "p_10", spouseId: "" },
+    { id: "p_75", name: "Clara Cruzat Del Solar", date: "2006-05-23", category: "Nieto", parentId: "p_10", spouseId: "" },
+    { id: "p_89", name: "Sebastián Cruzat Del Solar", date: "2009-05-19", category: "Nieto", parentId: "p_10", spouseId: "" },
+
+    // NIETOS — Cruzat Matte (p_11)
+    { id: "p_86", name: "Ximenita Cruzat Matte", date: "2008-10-16", category: "Nieto", parentId: "p_11", spouseId: "" },
+    { id: "p_96", name: "María Jesus Cruzat Matte", date: "2011-07-06", category: "Nieto", parentId: "p_11", spouseId: "" },
+    { id: "p_99", name: "Antonio Cruzat Matte", date: "2013-01-07", category: "Nieto", parentId: "p_11", spouseId: "" },
+    { id: "p_104", name: "Tomás Cruzat Matte", date: "2014-10-12", category: "Nieto", parentId: "p_11", spouseId: "" },
+
+    // NIETOS — Cruzat Vial (p_12)
+    { id: "p_74", name: "Francisco Cruzat Vial", date: "2005-07-22", category: "Nieto", parentId: "p_12", spouseId: "" },
+    { id: "p_78", name: "Josefa Cruzat Vial", date: "2007-02-15", category: "Nieto", parentId: "p_12", spouseId: "" },
+    { id: "p_81", name: "Amalia Cruzat Vial", date: "2008-11-05", category: "Nieto", parentId: "p_12", spouseId: "" },
+    { id: "p_91", name: "Juan Pablo Cruzat Vial", date: "2010-01-18", category: "Nieto", parentId: "p_12", spouseId: "" },
+    { id: "p_95", name: "María Isabel Cruzat Vial", date: "2011-06-14", category: "Nieto", parentId: "p_12", spouseId: "" },
+    { id: "p_103", name: "José Pedro Cruzat Vial", date: "2013-09-11", category: "Nieto", parentId: "p_12", spouseId: "" },
+    { id: "p_108", name: "Elena Cruzat Vial", date: "2017-07-03", category: "Nieto", parentId: "p_12", spouseId: "" },
+    { id: "p_114", name: "Sara Cruzat Vial", date: "2021-06-12", category: "Nieto", parentId: "p_12", spouseId: "" },
+
+    // NIETOS — Gana Cruzat (p_14)
+    { id: "p_77", name: "Arturo Gana Cruzat", date: "2007-02-14", category: "Nieto", parentId: "p_14", spouseId: "" },
+    { id: "p_88", name: "Pedro Gana Cruzat", date: "2009-03-15", category: "Nieto", parentId: "p_14", spouseId: "" },
+    { id: "p_93", name: "Juan Gana Cruzat", date: "2010-06-04", category: "Nieto", parentId: "p_14", spouseId: "" },
+    { id: "p_97", name: "Santiago Gana Cruzat", date: "2011-07-14", category: "Nieto", parentId: "p_14", spouseId: "" },
+    { id: "p_102", name: "Tomás Gana Cruzat", date: "2013-04-21", category: "Nieto", parentId: "p_14", spouseId: "" },
+    { id: "p_105", name: "Nicolás Gana Cruzat", date: "2014-12-24", category: "Nieto", parentId: "p_14", spouseId: "" },
+    { id: "p_111", name: "Alicia Gana Cruzat", date: "2018-05-15", category: "Nieto", parentId: "p_14", spouseId: "" },
+    { id: "p_113", name: "María Josefina Gana Cruzat", date: "2021-06-05", category: "Nieto", parentId: "p_14", spouseId: "" },
+
+    // NIETOS — Figueroa Cruzat (p_15)
+    { id: "p_98", name: "Diego Figueroa Cruzat", date: "2011-12-24", category: "Nieto", parentId: "p_15", spouseId: "" },
+    { id: "p_101", name: "Lourdes Figueroa Cruzat", date: "2013-02-27", category: "Nieto", parentId: "p_15", spouseId: "" },
+    { id: "p_107", name: "Rosario Figueroa Cruzat", date: "2015-04-22", category: "Nieto", parentId: "p_15", spouseId: "" },
+    { id: "p_110", name: "Ignacio Figueroa Cruzat", date: "2018-01-04", category: "Nieto", parentId: "p_15", spouseId: "" },
+    { id: "p_112", name: "Margarita Figueroa Cruzat", date: "2020-08-18", category: "Nieto", parentId: "p_15", spouseId: "" },
+
+    // CASADOS CON NIETOS
+    { id: "p_115", name: "Juan Pablo Costabal Garcia-Huidobro", date: "1987-02-09", category: "Casado", parentId: "", spouseId: "p_30" },
+    { id: "p_116", name: "Antonia Valdivieso Vial", date: "1991-12-03", category: "Casado", parentId: "", spouseId: "" },
+    { id: "p_117", name: "Rodrigo Perez Aspillaga", date: "1992-11-03", category: "Casado", parentId: "", spouseId: "" },
+    { id: "p_118", name: "Rosario Vial Valenzuela", date: "1989-11-20", category: "Casado", parentId: "", spouseId: "" },
+    { id: "p_119", name: "Benjamín Bustos Knight", date: "1986-07-04", category: "Casado", parentId: "", spouseId: "" },
+    { id: "p_120", name: "Javiera Uribe Ureta", date: "1991-08-05", category: "Casado", parentId: "", spouseId: "p_33" },
+    { id: "p_121", name: "Felipe Errázuriz Gandolini", date: "1991-08-11", category: "Casado", parentId: "", spouseId: "" },
+    { id: "p_122", name: "Javiera Martin Cajiao", date: "1996-04-18", category: "Casado", parentId: "", spouseId: "p_39" },
+    { id: "p_123", name: "Rosario Rolle Perez", date: "1995-08-22", category: "Casado", parentId: "", spouseId: "p_35" },
+    { id: "p_124", name: "María Ignacia Larrain Gonzalez", date: "1995-03-24", category: "Casado", parentId: "", spouseId: "" },
+    { id: "p_125", name: "Antonia Vidaurre Ilabaca", date: "1999-10-26", category: "Casado", parentId: "", spouseId: "p_45" },
+    { id: "p_126", name: "Martina Mengdehl Maino", date: "1998-07-02", category: "Casado", parentId: "", spouseId: "" },
+    { id: "p_127", name: "Cristobal Simonetti Galleguillos", date: "1997-06-13", category: "Casado", parentId: "", spouseId: "" },
+    { id: "p_128", name: "Carmen Luz Herrera Arenas", date: "1998-09-26", category: "Casado", parentId: "", spouseId: "" },
+    { id: "p_129", name: "Santiago Ovalle Irarrázabal", date: "1996-08-11", category: "Casado", parentId: "", spouseId: "" },
+    { id: "p_130", name: "Sofia Matte Allende", date: "1997-10-24", category: "Casado", parentId: "", spouseId: "" },
+    { id: "p_131", name: "Patricio Bustamante Court", date: "1993-08-26", category: "Casado", parentId: "", spouseId: "" },
+    { id: "p_132", name: "José Franke Sánchez", date: "1993-01-25", category: "Casado", parentId: "", spouseId: "" },
+    { id: "p_133", name: "Agustina Pinto Elster", date: "1996-08-09", category: "Casado", parentId: "", spouseId: "p_42" },
+
+    // BISNIETOS
+    { id: "p_134", name: "Benjamín Bustos Cox", date: "2016-05-20", category: "Bisnieto", parentId: "p_119", spouseId: "" },
+    { id: "p_135", name: "Tomás Bustos Cox", date: "2025-10-06", category: "Bisnieto", parentId: "p_119", spouseId: "" },
+    { id: "p_136", name: "Ignacio Cox Uribe", date: "2018-12-03", category: "Bisnieto", parentId: "p_33", spouseId: "" },
+    { id: "p_137", name: "Javiera Cox Uribe", date: "2021-08-12", category: "Bisnieto", parentId: "p_33", spouseId: "" },
+    { id: "p_138", name: "Clemente Cox Martin", date: "2021-10-15", category: "Bisnieto", parentId: "p_39", spouseId: "" },
+    { id: "p_139", name: "Juan Pedro Cox Martin", date: "2023-06-24", category: "Bisnieto", parentId: "p_39", spouseId: "" },
+    { id: "p_140", name: "Silvestre Cox Martin", date: "2025-06-13", category: "Bisnieto", parentId: "p_39", spouseId: "" },
+    { id: "p_141", name: "Olivia Errázuriz Cox", date: "2023-12-30", category: "Bisnieto", parentId: "p_121", spouseId: "" },
+    { id: "p_142", name: "Lucía Errázuriz Cox", date: "2023-12-30", category: "Bisnieto", parentId: "p_121", spouseId: "" },
+    { id: "p_143", name: "Fátima Errázuriz Cox", date: "2025-08-14", category: "Bisnieto", parentId: "p_121", spouseId: "" },
+    { id: "p_144", name: "Bernardo Cox Vial", date: "2021-01-24", category: "Bisnieto", parentId: "p_118", spouseId: "" },
+    { id: "p_145", name: "Rosa Cox Vial", date: "2023-01-31", category: "Bisnieto", parentId: "p_118", spouseId: "" },
+    { id: "p_146", name: "Francisco Cox Vial", date: "2025-04-21", category: "Bisnieto", parentId: "p_118", spouseId: "" },
+    { id: "p_147", name: "Salvador Valdés Pinto", date: "2025-09-10", category: "Bisnieto", parentId: "p_42", spouseId: "" },
+    { id: "p_148", name: "Manuel Cruzat Rolle", date: "2023-01-01", category: "Bisnieto", parentId: "p_35", spouseId: "" },
+    { id: "p_149", name: "Rosario Cruzat Rolle", date: "2025-03-13", category: "Bisnieto", parentId: "p_35", spouseId: "" },
+    { id: "p_150", name: "María Fernanda Cruzat Larraín", date: "2023-11-21", category: "Bisnieto", parentId: "p_124", spouseId: "" },
+    { id: "p_151", name: "Gaspar José Cruzat Larraín", date: "2025-06-17", category: "Bisnieto", parentId: "p_124", spouseId: "" },
+    { id: "p_152", name: "Delia Costabal Fontaine", date: "2020-04-24", category: "Bisnieto", parentId: "p_30", spouseId: "" }
+  ];
+
+  const monthNames = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  let adminPassword = "";
+  let currentMonth = new Date().getMonth();
+  let PEOPLE = [];
+
+  function parseLocalDate(dateString) {
+    const [y, m, d] = dateString.split('-').map(Number);
+    return new Date(y, m - 1, d);
+  }
+
+  function calculateAgeThisYear(birth) {
+    return new Date().getFullYear() - parseLocalDate(birth).getFullYear();
+  }
+
+  async function loadData() {
+    try {
+      const snap = await getDocs(collection(db, "personas"));
+      if (!snap.empty) {
+        PEOPLE = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      } else {
+        PEOPLE = INITIAL_BIRTHDAYS.map((p, i) => ({
+          id: p.id || "p_" + (i + 1),
+          parentId: p.parentId || "",
+          spouseId: p.spouseId || "",
+          ...p
+        }));
+      }
+    } catch (e) {
+      console.error("Error leyendo Firebase:", e);
+      PEOPLE = INITIAL_BIRTHDAYS;
+    }
+    renderAll();
+  }
+
+  function renderAll() {
+    renderNav();
+    renderMonth(currentMonth);
+    renderUpcoming();
+    renderTree();
+  }
+
+  window.toggleAdmin = () => {
+    if (adminPassword) {
+      adminPassword = "";
+      document.body.classList.remove("is-admin");
+      document.getElementById("btnAdmin").textContent = "🔒 Modo Admin";
+      document.getElementById("btnAdmin").classList.remove("unlocked");
+      document.getElementById("btnAdd").style.display = "none";
+      document.getElementById("btnSeed").style.display = "none";
+      return;
+    }
+    const pass = prompt("Ingresa la clave de administrador:");
+    if (pass === "dinosaurio") {
+      adminPassword = pass;
+      document.body.classList.add("is-admin");
+      document.getElementById("btnAdmin").textContent = "🔓 Admin Activo";
+      document.getElementById("btnAdmin").classList.add("unlocked");
+      document.getElementById("btnAdd").style.display = "inline-block";
+      document.getElementById("btnSeed").style.display = "inline-block";
+    } else if (pass !== null) {
+      alert("Clave incorrecta.");
+    }
+  };
+
+  window.subscribeEmail = async () => {
+    const email = prompt("Ingresa tu correo para recibir avisos los días de cumpleaños:");
+    if (!email || !email.includes("@")) return;
+    const clean = email.trim().toLowerCase();
+    try {
+      await setDoc(doc(db, "suscriptores", clean), { email: clean, createdAt: new Date().toISOString() });
+      alert("¡Listo! Te avisaremos por correo cada vez que haya cumpleaños.");
+    } catch (e) {
+      alert("Error al guardar el correo. Revisa las reglas de Firebase.");
+    }
+  };
+
+  window.openModal = (personId = null) => {
+    if (!adminPassword) return;
+    const p = personId ? PEOPLE.find(x => x.id === personId) : null;
+    document.getElementById("modalTitle").textContent = p ? "Editar Persona" : "Agregar Persona";
+    document.getElementById("f_id").value = p ? p.id : "";
+    document.getElementById("f_name").value = p ? p.name : "";
+    document.getElementById("f_date").value = p ? p.date : "";
+    document.getElementById("f_category").value = p ? p.category : "Bisnieto";
+
+    const sorted = [...PEOPLE].sort((a,b) => a.name.localeCompare(b.name));
+    const optionsHtml = `<option value="">-- Ninguno --</option>` +
+      sorted.map(x => `<option value="${x.id}">${x.name} (${x.category})</option>`).join("");
+    document.getElementById("f_parent").innerHTML = optionsHtml;
+    document.getElementById("f_spouse").innerHTML = optionsHtml;
+    document.getElementById("f_parent").value = p ? (p.parentId || "") : "";
+    document.getElementById("f_spouse").value = p ? (p.spouseId || "") : "";
+    document.getElementById("personModal").classList.add("open");
+  };
+
+  window.closeModal = () => document.getElementById("personModal").classList.remove("open");
+
+  window.saveForm = async () => {
+    const person = {
+      id: document.getElementById("f_id").value || "p_" + Date.now(),
+      name: document.getElementById("f_name").value.trim(),
+      date: document.getElementById("f_date").value,
+      category: document.getElementById("f_category").value,
+      parentId: document.getElementById("f_parent").value,
+      spouseId: document.getElementById("f_spouse").value
+    };
+    if (!person.name || !person.date) return alert("Completa nombre y fecha.");
+    try {
+      await setDoc(doc(db, "personas", person.id), person);
+      const idx = PEOPLE.findIndex(x => x.id === person.id);
+      if (idx >= 0) PEOPLE[idx] = person; else PEOPLE.push(person);
+      window.closeModal();
+      renderAll();
+    } catch (e) {
+      alert("Error al guardar en Firebase.");
+    }
+  };
+
+  window.syncInitialToFirebase = async () => {
+    if (!adminPassword || !confirm("¿Subir todos los cumpleaños iniciales a Firebase?")) return;
+    try {
+      for (const p of PEOPLE) {
+        await setDoc(doc(db, "personas", p.id), p);
+      }
+      alert("¡Listo! Todos los cumpleaños ya están guardados en Firebase.");
+    } catch (e) {
+      alert("Error al subir los datos. Revisa tu firebaseConfig y las reglas de Firestore.");
+    }
+  };
+
+  function renderNav() {
+    const nav = document.getElementById('monthNav');
+    nav.innerHTML = '';
+    monthNames.forEach((mn, idx) => {
+      const btn = document.createElement('button');
+      btn.textContent = mn;
+      if (idx === currentMonth) btn.classList.add('active');
+      btn.onclick = () => { currentMonth = idx; renderNav(); renderMonth(idx); };
+      nav.appendChild(btn);
+    });
+  }
+
+  function renderMonth(monthIndex) {
+    const container = document.getElementById('monthsContainer');
+    container.innerHTML = '';
+    const monthDiv = document.createElement('div'); monthDiv.className = 'month';
+    monthDiv.innerHTML = `<h3>${monthNames[monthIndex]}</h3>`;
+    const grid = document.createElement('div'); grid.className = 'calendar-grid';
+    const year = new Date().getFullYear();
+    const firstDay = (new Date(year, monthIndex, 1).getDay() + 6) % 7;
+    const daysInMonth = new Date(year, monthIndex + 1, 0).getDate();
+    const today = new Date();
+
+    for (let i = 0; i < firstDay; i++) {
+      const empty = document.createElement('div'); empty.className = 'day inactive'; grid.appendChild(empty);
+    }
+    for (let d = 1; d <= daysInMonth; d++) {
+      const dayBox = document.createElement('div'); dayBox.className = 'day';
+      if (d === today.getDate() && monthIndex === today.getMonth()) dayBox.classList.add('today');
+      const wd = new Date(year, monthIndex, d).toLocaleDateString('es-CL', { weekday: 'short' });
+      dayBox.innerHTML = `<div class="num">${d}</div><div class="weekday">${wd}</div>`;
+      PEOPLE.filter(p => {
+        const pd = parseLocalDate(p.date);
+        return pd.getMonth() === monthIndex && pd.getDate() === d;
+      }).forEach(b => {
+        const span = document.createElement('div');
+        span.className = 'badge ' + b.category.replace(/ /g, '');
+        span.textContent = `${b.name} (${calculateAgeThisYear(b.date)})`;
+        span.onclick = () => { if (adminPassword) window.openModal(b.id); };
+        dayBox.appendChild(span);
+      });
+      grid.appendChild(dayBox);
+    }
+    monthDiv.appendChild(grid);
+    container.appendChild(monthDiv);
+  }
+
+  function renderUpcoming() {
+    const list = document.getElementById('upcomingList');
+    list.innerHTML = '';
+    const today = new Date();
+    const upcoming = [];
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(today.getFullYear(), today.getMonth(), today.getDate() + i);
+      PEOPLE.filter(p => {
+        const pd = parseLocalDate(p.date);
+        return pd.getMonth() === d.getMonth() && pd.getDate() === d.getDate();
+      }).forEach(b => upcoming.push({ ...b, dateObj: d }));
+    }
+    if (!upcoming.length) {
+      list.innerHTML = '<div>No hay cumpleaños en los próximos 7 días.</div>';
+      return;
+    }
+    upcoming.forEach(b => {
+      const card = document.createElement('div'); card.className = 'upcomingCard';
+      const fullDate = b.dateObj.toLocaleDateString('es-CL', { weekday: 'long', day: 'numeric', month: 'long' });
+      card.innerHTML = `<div style="color:#555">${fullDate}</div><strong>${b.name} (${calculateAgeThisYear(b.date)})</strong><span class="badge ${b.category}">${b.category}</span>`;
+      list.appendChild(card);
+    });
+  }
+
+  window.renderSearch = () => {
+    const q = document.getElementById("searchInput").value.toLowerCase().trim();
+    const box = document.getElementById("searchResults");
+    if (!q) { box.innerHTML = ""; return; }
+    const matches = PEOPLE.filter(p => p.name.toLowerCase().includes(q));
+    box.innerHTML = matches.map(p =>
+      `<span class="badge ${p.category}" style="margin-right:6px" onclick="if(document.body.classList.contains('is-admin')) openModal('${p.id}')">${p.name} — ${p.date} (${calculateAgeThisYear(p.date)} años)</span>`
+    ).join("") || "<small>Sin resultados</small>";
+  };
+
+  function renderTree() {
+    const root = document.getElementById("treeRoot");
+    const byId = Object.fromEntries(PEOPLE.map(p => [p.id, p]));
+    const rendered = new Set();
+
+    function buildNode(person) {
+      if (rendered.has(person.id)) return "";
+      rendered.add(person.id);
+      const spouse = person.spouseId ? byId[person.spouseId] : null;
+      if (spouse) rendered.add(spouse.id);
+      const children = PEOPLE.filter(c => c.parentId === person.id || (spouse && c.parentId === spouse.id));
+      let html = `<li><div class="person-node">
+        <span class="badge ${person.category}">${person.category}</span>
+        <strong>${person.name}</strong> <small>(${calculateAgeThisYear(person.date)})</small>
+        <button class="edit-icon" onclick="openModal('${person.id}')">✏️ Editar</button>`;
+      if (spouse) {
+        html += `<span class="spouse-tag">💍 ${spouse.name} (${calculateAgeThisYear(spouse.date)})
+          <button class="edit-icon" onclick="openModal('${spouse.id}')">✏️</button></span>`;
+      }
+      html += `</div>`;
+      if (children.length) html += `<ul>` + children.map(buildNode).join("") + `</ul>`;
+      return html + `</li>`;
+    }
+
+    const roots = PEOPLE.filter(p => !p.parentId).sort((a,b) => (a.category === "Abuelos" ? -1 : 1));
+    root.innerHTML = `<ul>` + roots.map(buildNode).join("") + `</ul>`;
+  }
+
+  window.switchTab = (tab, btn) => {
+    document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('view-' + tab).classList.add('active');
+    btn.classList.add('active');
+  };
+
+  document.getElementById('today').textContent = `Hoy: ${new Date().toLocaleDateString('es-CL')}`;
+  loadData();
+</script>
+</body>
+</html>
