@@ -176,7 +176,7 @@
   }
   .legend-item { display: flex; align-items: center; gap: 6px; }
 
-  /* ================= ÁRBOL GENEALÓGICO HÍBRIDO (HORIZONTAL + VERTICAL) ================= */
+  /* ================= ÁRBOL GENEALÓGICO HÍBRIDO ================= */
   .tree-toolbar {
     display: flex; justify-content: space-between; align-items: center;
     gap: 10px; flex-wrap: wrap; margin-bottom: 12px;
@@ -186,13 +186,13 @@
 
   .tree-canvas-wrap { position: relative; }
 
-  /* Cuadro de Estadísticas fijo arriba a la derecha */
+  /* Cuadro de Estadísticas fijo arriba a la derecha — apertura por generación y sexo */
   .tree-stats-card {
     position: absolute;
     top: 14px;
     right: 14px;
     z-index: 30;
-    width: 272px;
+    width: 288px;
     background: rgba(255, 255, 255, 0.96);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
@@ -206,7 +206,7 @@
   .tree-stats-card.minimized .stats-body { display: none; }
   .stats-header {
     display: flex; align-items: center; justify-content: space-between; gap: 8px;
-    font-size: 0.82rem; font-weight: 700; color: var(--text);
+    font-size: 0.83rem; font-weight: 700; color: var(--text);
   }
   .stats-toggle-btn {
     background: #f1f5f9; border: 1px solid #e2e8f0; color: #475569;
@@ -214,37 +214,70 @@
   }
   .stats-toggle-btn:hover { background: #e2e8f0; }
 
-  .stats-grid {
-    display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;
-    margin: 10px 0 12px;
+  .stats-gen-list {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    margin-top: 10px;
   }
-  .stat-kpi {
-    background: #f8fafc; border: 1px solid var(--border); border-radius: 10px;
-    padding: 7px 6px; text-align: center;
+  .gen-stat-box {
+    background: #f8fafc;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 8px 10px;
   }
-  .stat-kpi .kpi-val { display: block; font-size: 1.15rem; font-weight: 800; line-height: 1.1; }
-  .stat-kpi .kpi-lbl { display: block; font-size: 0.68rem; font-weight: 600; color: var(--muted); margin-top: 2px; text-transform: uppercase; letter-spacing: 0.03em; }
-  .stat-kpi.kpi-hijos .kpi-val { color: #2563eb; }
-  .stat-kpi.kpi-nietos .kpi-val { color: #16a34a; }
-  .stat-kpi.kpi-bisnietos .kpi-val { color: #db2777; }
-
-  .gender-section { border-top: 1px solid var(--border); padding-top: 10px; }
-  .gender-title {
-    display: flex; justify-content: space-between; align-items: center;
-    font-size: 0.73rem; font-weight: 700; color: #475569; margin-bottom: 6px;
+  .gen-stat-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 5px;
+  }
+  .gen-title-wrap {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .gen-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+  .gen-dot.hijos { background: #2563eb; }
+  .gen-dot.nietos { background: #16a34a; }
+  .gen-dot.bisnietos { background: #ec4899; }
+  .gen-total-pill {
+    font-size: 0.78rem;
+    font-weight: 800;
+    color: var(--text);
+    background: #fff;
+    border: 1px solid #cbd5e1;
+    padding: 1px 8px;
+    border-radius: 999px;
   }
   .gender-bar {
-    height: 10px; border-radius: 999px; overflow: hidden;
-    display: flex; background: #e2e8f0; margin-bottom: 7px;
+    height: 8px; border-radius: 999px; overflow: hidden;
+    display: flex; background: #e2e8f0; margin-bottom: 5px;
   }
   .gender-bar-m { background: linear-gradient(90deg, #3b82f6, #2563eb); transition: width 0.35s ease; }
   .gender-bar-f { background: linear-gradient(90deg, #f472b6, #db2777); transition: width 0.35s ease; }
   .gender-labels {
-    display: flex; justify-content: space-between; gap: 6px; font-size: 0.74rem; font-weight: 600;
+    display: flex; justify-content: space-between; gap: 6px; font-size: 0.73rem; font-weight: 600;
   }
   .g-male { color: var(--male); }
   .g-female { color: var(--female); }
-  .stats-foot { margin-top: 8px; font-size: 0.7rem; color: var(--muted); text-align: center; }
+  .stats-foot {
+    margin-top: 9px;
+    padding-top: 8px;
+    border-top: 1px solid var(--border);
+    font-size: 0.71rem;
+    color: var(--muted);
+    text-align: center;
+    line-height: 1.35;
+  }
 
   .tree-viewport {
     background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
@@ -324,7 +357,6 @@
     padding: 10px 0 2px 16px;
     position: relative;
   }
-  /* Pequeño tallo desde la tarjeta padre hacia la lista vertical */
   .tree .branch-vertical::before {
     content: ''; position: absolute; top: 0; left: 16px;
     height: 10px; border-left: 2px solid #94a3b8; opacity: 0.6;
@@ -336,16 +368,11 @@
     flex-direction: column;
     align-items: stretch;
   }
-  /* Línea vertical continua del tronco */
   .tree .branch-vertical > li::before {
     content: ''; position: absolute; top: 0; left: 0;
     height: 100%; border-left: 2px solid #94a3b8; opacity: 0.6;
   }
-  /* El último hijo corta la línea vertical justo en su codo */
-  .tree .branch-vertical > li:last-child::before {
-    height: 28px;
-  }
-  /* Brazo horizontal hacia la tarjeta del hijo */
+  .tree .branch-vertical > li:last-child::before { height: 28px; }
   .tree .branch-vertical > li::after {
     content: ''; position: absolute; top: 28px; left: 0;
     width: 14px; border-top: 2px solid #94a3b8; opacity: 0.6;
@@ -482,7 +509,7 @@
       <span>•</span>
       <span id="statsLabel">Cargando...</span>
       <span id="syncStatus" class="sync-pill">⚡ Cargando...</span>
-      <span class="ver-tag">v4</span>
+      <span class="ver-tag">v5</span>
     </div>
   </div>
   <div class="top-actions">
@@ -531,7 +558,7 @@
   <section class="card">
     <div class="tree-toolbar">
       <div class="tree-controls">
-        <button class="btn" onclick="setTreeDepth(1)">🌳 Abuelos y Hijos</button>
+        <button class="btn" onclick="setTreeDepth(1)">🌳 Abuelos e Hijos</button>
         <button class="btn" onclick="setTreeDepth(2)">🌿 Hasta Nietos</button>
         <button class="btn" onclick="setTreeDepth(99)">📂 Todo abierto</button>
       </div>
@@ -547,43 +574,15 @@
     </p>
 
     <div class="tree-canvas-wrap">
-      <!-- CUADRO DE ESTADÍSTICAS ARRIBA A LA DERECHA -->
+      <!-- CUADRO DE ESTADÍSTICAS ARRIBA A LA DERECHA (3 APERTURAS POR SEXO) -->
       <aside id="treeStatsCard" class="tree-stats-card">
         <div class="stats-header">
-          <span>📊 Resumen Familiar</span>
+          <span>📊 Descendencia por sexo</span>
           <button class="stats-toggle-btn" onclick="toggleStatsCard()" id="statsToggleBtn" title="Ocultar / mostrar">−</button>
         </div>
         <div class="stats-body">
-          <div class="stats-grid">
-            <div class="stat-kpi kpi-hijos">
-              <span class="kpi-val" id="statHijos">0</span>
-              <span class="kpi-lbl">Hijos</span>
-            </div>
-            <div class="stat-kpi kpi-nietos">
-              <span class="kpi-val" id="statNietos">0</span>
-              <span class="kpi-lbl">Nietos</span>
-            </div>
-            <div class="stat-kpi kpi-bisnietos">
-              <span class="kpi-val" id="statBisnietos">0</span>
-              <span class="kpi-lbl">Bisnietos</span>
-            </div>
-          </div>
-
-          <div class="gender-section">
-            <div class="gender-title">
-              <span>Distribución por sexo</span>
-              <span id="statTotalBadge" style="color:var(--muted); font-weight:600;"></span>
-            </div>
-            <div class="gender-bar">
-              <div id="genderBarM" class="gender-bar-m" style="width:50%;"></div>
-              <div id="genderBarF" class="gender-bar-f" style="width:50%;"></div>
-            </div>
-            <div class="gender-labels">
-              <span class="g-male" id="statMaleTxt">♂ 0% (0)</span>
-              <span class="g-female" id="statFemaleTxt">♀ 0% (0)</span>
-            </div>
-            <div class="stats-foot" id="statsFoot"></div>
-          </div>
+          <div id="statsGenList" class="stats-gen-list"></div>
+          <div id="statsFoot" class="stats-foot"></div>
         </div>
       </aside>
 
@@ -849,10 +848,9 @@ const INITIAL_BIRTHDAYS = [
   { id: "p_152", name: "Delia Costabal Fontaine", date: "2020-04-24", gender: "F", category: "Bisnieto", parentId: "p_30", spouseId: "" }
 ];
 
-// Mapa de sexo fijo por ID para los registros ya definidos
 const INITIAL_GENDER_BY_ID = Object.fromEntries(INITIAL_BIRTHDAYS.map(p => [p.id, p.gender]));
 
-const CACHE_KEY = "cruzat_people_cache_v4";
+const CACHE_KEY = "cruzat_people_cache_v5";
 const monthNames = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
 const shortMonths = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
 
@@ -975,45 +973,55 @@ function renderAll() {
   renderTree(currentTreeDepth);
 }
 
-// --- ESTADÍSTICAS DEL ÁRBOL ---
+// --- ESTADÍSTICAS DEL ÁRBOL: APERTURA SEPARADA POR GENERACIÓN Y SEXO ---
+function buildGenStatHtml(label, dotClass, list) {
+  let m = 0, f = 0;
+  list.forEach(p => {
+    if (p.gender === "M") m++;
+    else if (p.gender === "F") f++;
+  });
+  const total = list.length;
+  const defined = m + f;
+  const mPct = defined ? ((m / defined) * 100).toFixed(1) : "0.0";
+  const fPct = defined ? (100 - Number(mPct)).toFixed(1) : "0.0";
+
+  return `<div class="gen-stat-box">
+    <div class="gen-stat-head">
+      <span class="gen-title-wrap"><span class="gen-dot ${dotClass}"></span>${label}</span>
+      <span class="gen-total-pill">${total}</span>
+    </div>
+    <div class="gender-bar">
+      <div class="gender-bar-m" style="width:${mPct}%;"></div>
+      <div class="gender-bar-f" style="width:${fPct}%;"></div>
+    </div>
+    <div class="gender-labels">
+      <span class="g-male">♂ ${m} (${mPct}%)</span>
+      <span class="g-female">♀ ${f} (${fPct}%)</span>
+    </div>
+  </div>`;
+}
+
 function renderTreeStats() {
   const abueloIds = new Set(
     PEOPLE.filter(p => p.category.toLowerCase().includes("abuelo")).map(p => p.id)
   );
 
-  const hijosCount = abueloIds.size
-    ? PEOPLE.filter(p => abueloIds.has(p.parentId)).length
-    : PEOPLE.filter(p => p.category === "Tio" && p.parentId).length;
+  const hijos = abueloIds.size
+    ? PEOPLE.filter(p => abueloIds.has(p.parentId))
+    : PEOPLE.filter(p => p.category === "Tio" && p.parentId);
 
-  const nietosCount = PEOPLE.filter(p => p.category === "Nieto").length;
-  const bisnietosCount = PEOPLE.filter(p => p.category === "Bisnieto").length;
+  const nietos = PEOPLE.filter(p => p.category === "Nieto");
+  const bisnietos = PEOPLE.filter(p => p.category === "Bisnieto");
 
-  let maleCount = 0;
-  let femaleCount = 0;
-  let unknownCount = 0;
-  PEOPLE.forEach(p => {
-    if (p.gender === "M") maleCount++;
-    else if (p.gender === "F") femaleCount++;
-    else unknownCount++;
-  });
+  document.getElementById("statsGenList").innerHTML =
+    buildGenStatHtml("Hijos", "hijos", hijos) +
+    buildGenStatHtml("Nietos", "nietos", nietos) +
+    buildGenStatHtml("Bisnietos", "bisnietos", bisnietos);
 
-  const definedTotal = maleCount + femaleCount || 1;
-  const malePct = ((maleCount / definedTotal) * 100).toFixed(1);
-  const femalePct = (100 - Number(malePct)).toFixed(1);
-
-  document.getElementById("statHijos").textContent = hijosCount;
-  document.getElementById("statNietos").textContent = nietosCount;
-  document.getElementById("statBisnietos").textContent = bisnietosCount;
-  document.getElementById("statTotalBadge").textContent = `${PEOPLE.length} total`;
-  document.getElementById("genderBarM").style.width = malePct + "%";
-  document.getElementById("genderBarF").style.width = femalePct + "%";
-  document.getElementById("statMaleTxt").textContent = `♂ ${malePct}% (${maleCount})`;
-  document.getElementById("statFemaleTxt").textContent = `♀ ${femalePct}% (${femaleCount})`;
-
-  const spousesCount = Math.max(0, PEOPLE.length - abueloIds.size - hijosCount - nietosCount - bisnietosCount);
-  const unknownNote = unknownCount > 0 ? ` • ${unknownCount} sin sexo definido` : "";
+  const totalDesc = hijos.length + nietos.length + bisnietos.length;
+  const otros = Math.max(0, PEOPLE.length - totalDesc);
   document.getElementById("statsFoot").textContent =
-    `Incluye ${abueloIds.size} abuelos y ${spousesCount} cónyuges${unknownNote}`;
+    `Total descendencia: ${totalDesc} • +${otros} (abuelos y cónyuges)`;
 }
 
 function toggleStatsCard() {
@@ -1204,7 +1212,6 @@ function renderTree(expandDepth = currentTreeDepth) {
     html += `</div>`;
 
     if (children.length > 0) {
-      // Primera rama (hijos de Abuelos, depth === 0) es HORIZONTAL; todo lo demás es VERTICAL
       const branchClass = depth === 0 ? "branch-horizontal" : "branch-vertical";
       html += `<ul class="${branchClass} ${isCollapsed ? 'collapsed' : ''}">` +
         children.map(c => buildNode(c, depth + 1)).join("") +
